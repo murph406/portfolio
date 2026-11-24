@@ -78,7 +78,8 @@ Build small and iteratively. Never one-shot a feature or a stack.
 > Exact commands Claude should run. Fill in as tooling is chosen.
 
 - Install: TODO
-- Dev (client): `cd client && npm run dev`
+- Dev (client): `npm run client:start` (from root; same as `cd client && npm run dev`)
+- Build (client): `npm run client:build` (from root; typechecks, then Vite build)
 - Dev (api, local): TODO
 - Typecheck (client): `cd client && npm run typecheck`
 - Lint: TODO

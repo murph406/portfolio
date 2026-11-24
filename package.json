@@ -1,0 +1,8 @@
+{
+  "name": "portfolio",
+  "private": true,
+  "scripts": {
+    "client:start": "npm --prefix client run dev",
+    "client:build": "npm --prefix client run build"
+  }
+}
