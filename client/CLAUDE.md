@@ -10,13 +10,13 @@
 
 ## Rendering Decision
 
-Vite + React SPA. See `/docs/decisions/0001-client-rendering.md`. Build-time prerendering can be added later if link previews/SEO need it.
+Vite + React SPA. Build-time prerendering can be added later if link previews/SEO need it.
 
 ## Stack
 
 - TypeScript, React
 - Vite (build/dev), npm
-- TODO: routing
+- Routing: `react-router` v8. Routes live in `src/router/`, pages in `src/pages/<Name>/`
 - TODO: styling approach
 - TODO: state / data fetching
 - TODO: testing (unit, component, e2e)

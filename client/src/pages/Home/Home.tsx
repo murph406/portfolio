@@ -1,7 +1,7 @@
 import Button from "@components/elements/Button"
 import useTheme from "@hooks/useTheme"
 
-export default function App() {
+export default function Home() {
   const { theme, setTheme } = useTheme()
 
   function handleThemeToggle() {

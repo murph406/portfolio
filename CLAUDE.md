@@ -38,7 +38,6 @@ Methodology follows [*Job Hunting in the Age of AI* (Jerome Hardaway, master.dev
 /agents/                Scoring agents: site, GitHub, LinkedIn, resume (see agents/CLAUDE.md)
 /content/               Career source of truth                         (see content/CLAUDE.md)
 /shared/                TODO: shared types / API contracts (confirm)
-/docs/decisions/        ADRs (architecture decision records)
 /docs/plans/            Feature plans: numbered steps, each with a verification check
 /docs/patterns/         My conventions per workspace (api.md, infra.md, client.md, ...)
 /.claude/               settings, hooks, subagents, slash commands
@@ -143,16 +142,6 @@ Enforcement (CLAUDE.md is guidance; these are the hard limits):
 - `commands/`: TODO: slash commands, e.g. `/score-resume`, `/score-site`, `/new-adr`
 - `skills/`: TODO
 - All of the above are committed; they are part of the showcase.
-
-## Decisions Log
-
-- ADRs live in `/docs/decisions/NNNN-title.md`
-- TODO: ADR template
-- Seed ADRs to write:
-  - TODO: CloudFormation over CDK / Terraform / SAM
-  - TODO: No VPC for Lambda
-  - TODO: Monorepo structure and tooling
-  - TODO: Single source of truth for career data (`/content`)
 
 ## Open Questions
 
