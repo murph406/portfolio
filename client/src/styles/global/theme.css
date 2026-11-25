@@ -22,6 +22,11 @@
   --primary-surface-1: light-dark(hsl(from var(--primary) h s 55%), hsl(from var(--primary) h s 42%));
   --primary-surface-2: light-dark(hsl(from var(--primary) h s 66%), hsl(from var(--primary) h s 29%));
   --primary-surface-3: light-dark(hsl(from var(--primary) h s 85%), hsl(from var(--primary) h s 15%));
+
+  /* Glass: translucent, for use over a backdrop blur */
+  --glass-bg: light-dark(hsl(from var(--primary) h 20% 99% / 60%), hsl(from var(--primary) h 5% 9% / 55%));
+  --glass-sheen: light-dark(hsl(from var(--primary) h 20% 100% / 70%), hsl(from var(--primary) h 20% 85% / 8%));
+  --glass-border: light-dark(hsl(from var(--primary) h 20% 70% / 45%), hsl(from var(--primary) h 20% 85% / 12%));
 }
 
 /* data-theme on <html> picks the side of every light-dark() token. */

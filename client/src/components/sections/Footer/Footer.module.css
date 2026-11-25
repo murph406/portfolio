@@ -5,7 +5,7 @@
   align-items: center;
   justify-content: space-between;
   width: 100%;
-  padding: 1.5rem 5rem;
+  padding: 1.5rem var(--page-inline);
   background-color: var(--primary);
   color: white;
 }

@@ -1,0 +1,9 @@
+/*
+ * Page layout. Full-width bars pad their contents with --page-inline,
+ * which keeps them within a centered --content-max.
+ */
+:root {
+  --content-max: 74rem;
+  --gutter: clamp(1.25rem, 5vw, 3rem);
+  --page-inline: max(var(--gutter), (100% - var(--content-max)) / 2);
+}
