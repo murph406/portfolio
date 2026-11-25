@@ -9,6 +9,11 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+::selection {
+  background-color: var(--primary-surface-3);
+  color: var(--text-1);
+}
+
 button,
 input,
 select,
