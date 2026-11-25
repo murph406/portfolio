@@ -1,0 +1,16 @@
+:root {
+  color-scheme: light;
+  --surface-1: hsl(207 20% 99%);
+  --text-1: hsl(207 64% 10%);
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --surface-1: hsl(207 10% 15%);
+  --text-1: hsl(207 20% 85%);
+}
+
+body {
+  background-color: var(--surface-1);
+  color: var(--text-1);
+}
