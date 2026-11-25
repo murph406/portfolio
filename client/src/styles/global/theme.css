@@ -7,9 +7,9 @@
   --primary: #1d7a4e;
 
   /* Surfaces */
-  --surface-1: light-dark(hsl(from var(--primary) h 20% 99%), hsl(from var(--primary) h 10% 15%));
-  --surface-2: light-dark(hsl(from var(--primary) h 22.5% 95%), hsl(from var(--primary) h 5% 11%));
-  --surface-3: light-dark(hsl(from var(--primary) h 20% 89%), hsl(from var(--primary) h 5% 14%));
+  --surface-1: light-dark(hsl(from var(--primary) h 20% 99%), hsl(from var(--primary) h 5% 9%));
+  --surface-2: light-dark(hsl(from var(--primary) h 22.5% 95%), hsl(from var(--primary) h 7.5% 12%));
+  --surface-3: light-dark(hsl(from var(--primary) h 20% 89%), hsl(from var(--primary) h 10% 15%));
   --surface-4: light-dark(hsl(from var(--primary) h 20% 84%), hsl(from var(--primary) h 5% 22%));
   --surface-5: light-dark(hsl(from var(--primary) h 20% 70%), hsl(from var(--primary) h 5% 35%));
 
