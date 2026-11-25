@@ -1,59 +1,35 @@
 .footer {
-  box-sizing: border-box;
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: space-between;
-  width: 100%;
   padding: var(--space-lg) var(--page-inline);
-  background-color: var(--primary);
-  color: white;
 }
 
-:where(.footer) p {
-  margin: 0;
-}
-
-.contact {
+.brand {
+  flex: 1;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: center;
-  margin-bottom: var(--space-lg);
-  padding-top: var(--space-md);
-  font-style: normal;
+  gap: var(--space-xs);
+  font-weight: bold;
+  font-size: 1.05rem;
+   span {
+    margin-bottom: .2rem;
+   }
 }
 
 .logo {
-  width: 1.5rem;
-  height: 1.5rem;
-  margin-bottom: var(--space-md);
+  width: 1.75rem;
+  height: 1.75rem;
 }
 
-.label {
-  margin-bottom: var(--space-xs);
-}
-
-.email {
-  color: white;
-  font-size: 0.85rem;
-  font-weight: bold;
-  text-decoration: none;
-}
-
-.email:focus-visible {
-  outline: 2px solid white;
-  outline-offset: 2px;
+.caption {
+  line-height: 1;
 }
 
 @media (width >= 48rem) {
-  .contact {
+  .brand {
     align-self: flex-start;
-    align-items: stretch;
-  }
-}
-
-@media (width >= 64rem) {
-  .email {
-    font-size: 0.65rem;
   }
 }

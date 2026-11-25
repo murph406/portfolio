@@ -1,13 +1,13 @@
 .header {
   /* How much height the bar loses when fully shrunk */
-  --shrink: 1.75rem;
+  --shrink: 2rem;
 
   position: fixed;
   top: 0;
   right: 0;
   left: 0;
   z-index: 10;
-  height: 5.5rem;
+  height: 5.75rem;
   /* The box keeps its full height, so don't block clicks below the shrunk bar */
   pointer-events: none;
 }
@@ -16,25 +16,24 @@
  * Paused: useScrollShrink sets how far along these are.
  * Longhands on purpose: the build minifies a nameless `animation` shorthand to `none`.
  */
-.glass,
-.inner,
-.logo {
+.backdrop,
+.content,
+.homeLink {
   animation-duration: 1s;
   animation-timing-function: linear;
   animation-fill-mode: both;
   animation-play-state: paused;
 }
 
-.glass {
+.backdrop {
   animation-name: slideUp;
-  pointer-events: auto;
   position: absolute;
   inset: 0;
-  /* background: linear-gradient(to bottom, var(--glass-sheen), transparent 60%), var(--glass-bg); */
+  pointer-events: auto;
   backdrop-filter: blur(14px) saturate(180%);
 }
 
-.inner {
+.content {
   animation-name: recenter;
   position: relative;
   display: flex;
@@ -43,13 +42,19 @@
   padding-inline: var(--page-inline);
 }
 
-.logo {
+.homeLink {
   animation-name: scaleDown;
-  /* Keeps the left edge aligned with the footer while shrinking */
+  /* Keeps the left edge in place while shrinking */
   transform-origin: left center;
   pointer-events: auto;
   width: 2.5rem;
   height: 2.5rem;
+}
+
+.logo {
+  display: block;
+  width: 100%;
+  height: 100%;
 }
 
 @keyframes slideUp {
