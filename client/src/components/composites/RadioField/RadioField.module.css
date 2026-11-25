@@ -1,0 +1,17 @@
+.radioField {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  color: var(--text-1);
+  cursor: pointer;
+  user-select: none;
+}
+
+.radioField input {
+  margin: 0;
+  cursor: inherit;
+}
+
+.radioField:has(input:disabled) {
+  cursor: not-allowed;
+}

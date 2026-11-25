@@ -1,5 +1,10 @@
 # Client patterns
 
+## Components
+
+- `components/elements/` holds the bare control (`Radio`, `Checkbox`).
+- `components/composites/<Control>Field` holds one control with its label (`RadioField`, `CheckboxField`).
+
 ## Styling
 
 - Each component or page that needs styles has a `<Name>.module.css` beside it, imported as `styles`.

@@ -1,0 +1,17 @@
+.checkboxField {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--text-1);
+  cursor: pointer;
+  user-select: none;
+}
+
+.checkboxField input {
+  margin: 0;
+  cursor: inherit;
+}
+
+.checkboxField:has(input:disabled) {
+  cursor: not-allowed;
+}

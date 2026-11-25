@@ -1,0 +1,8 @@
+.radio {
+  accent-color: var(--primary);
+  cursor: pointer;
+}
+
+.radio:disabled {
+  cursor: not-allowed;
+}
