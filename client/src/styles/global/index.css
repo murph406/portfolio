@@ -1,6 +1,13 @@
 @import "./theme.css";
 @import "./layout.css";
 
+/* Stop dead at the page edges: no rubber-band or stretch effect */
+html {
+  overscroll-behavior: none;
+  scrollbar-width: thin;
+  scrollbar-color: var(--surface-2) transparent;
+}
+
 body {
   margin: 0;
   background-color: var(--surface-1);
