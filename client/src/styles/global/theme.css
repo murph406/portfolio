@@ -5,6 +5,8 @@
 :root {
   /* Foundation: change this hex to re-theme */
   --primary: #1d7a4e;
+  /* Content drawn on a --primary fill */
+  --on-primary: white;
 
   /* Surfaces */
   --surface-1: light-dark(hsl(from var(--primary) h 20% 99%), hsl(from var(--primary) h 5% 9%));

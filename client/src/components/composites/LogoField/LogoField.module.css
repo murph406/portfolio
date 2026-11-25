@@ -1,0 +1,18 @@
+.logoField {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  color: var(--text-1);
+  font-weight: bold;
+  font-size: 1.15rem;
+}
+
+.logo {
+  width: 2rem;
+  height: 2rem;
+}
+
+.caption {
+  margin-bottom: 0.08rem;
+  line-height: 1;
+}

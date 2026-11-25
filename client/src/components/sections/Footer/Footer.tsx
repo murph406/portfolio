@@ -1,14 +1,11 @@
-import s from "./Footer.module.css"
+import LogoField from "@components/composites/LogoField"
 
-const NAME = "Ryan Murphy"
+import s from "./Footer.module.css"
 
 export default function Footer() {
   return (
     <footer className={s.footer}>
-      <div className={s.brand}>
-        <img className={s.logo} src="/favicon/apple-touch-icon.png" alt={NAME} />
-        <span className={s.caption}>portfolio</span>
-      </div>
+      <LogoField className={s.brand} />
     </footer>
   )
 }

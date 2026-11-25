@@ -1,0 +1,16 @@
+.logo {
+  display: block;
+}
+
+.square {
+  fill: var(--primary);
+}
+
+/* Sized in viewBox units, so the letters scale with the mark */
+.letters {
+  fill: var(--on-primary);
+  font-size: 54px;
+  font-weight: 800;
+  /* Also trails the last letter, so x in Logo.tsx is offset by half of this */
+  letter-spacing: 2px;
+}
