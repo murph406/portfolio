@@ -15,6 +15,14 @@
 
 Reference: `client/src/components/sections/Hero/`.
 
+## Responsive
+
+- Mobile-first: base styles are the phone layout, and `min-width` queries add to it.
+- Fluid before breakpoints: use `clamp()`, `flex-wrap` and `max-width`. Add a query only when a layout breaks.
+- Two breakpoints: `48rem` (tablet) and `64rem` (desktop), written literally: `@media (width >= 48rem)`.
+- No breakpoint variables: `var()` does not work in `@media`.
+- Queries live in the component's own `.module.css`.
+
 ## Theming
 
 Reference: `client/src/styles/global/theme.css`.

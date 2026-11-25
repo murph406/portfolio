@@ -1,6 +1,7 @@
 // Loaded as a blocking script in <head> so the theme is set before first paint.
 (() => {
   let theme = null
+
   try {
     theme = localStorage.getItem("theme-preference")
   } catch {

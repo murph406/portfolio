@@ -17,7 +17,7 @@
 .contact {
   display: flex;
   flex-direction: column;
-  align-self: flex-start;
+  align-items: center;
   margin-bottom: var(--space-lg);
   padding-top: var(--space-md);
   font-style: normal;
@@ -35,7 +35,7 @@
 
 .email {
   color: white;
-  font-size: 0.65rem;
+  font-size: 0.85rem;
   font-weight: bold;
   text-decoration: none;
 }
@@ -45,37 +45,15 @@
   outline-offset: 2px;
 }
 
-/* @media (max-width: 1365.98px) {
-  .logo {
-    width: 2.75rem;
-    height: 2.75rem;
-    margin-bottom: 1.5rem;
+@media (width >= 48rem) {
+  .contact {
+    align-self: flex-start;
+    align-items: stretch;
   }
+}
 
-  .signature {
+@media (width >= 64rem) {
+  .email {
     font-size: 0.65rem;
   }
 }
-
-@media (max-width: 1023.98px) {
-  .email {
-    font-size: 0.85rem;
-  }
-}
-
-@media (max-width: 767.98px) {
-  .footer {
-    min-height: 12.5rem;
-    padding: 2.5rem 1.5rem;
-  }
-
-  .contact {
-    align-self: center;
-    align-items: center;
-    padding-bottom: 4rem;
-  }
-
-  .label {
-    font-size: 0.85rem;
-  }
-} */
