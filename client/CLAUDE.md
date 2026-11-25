@@ -32,6 +32,7 @@ Vite + React SPA. See `/docs/decisions/0001-client-rendering.md`. Build-time pre
 ## Conventions
 
 - Import order and style rules are enforced by `eslint.config.js` (no semicolons)
+- No arrow functions in JSX. Declare handlers as hoisted functions and pass them by name
 - Import across folders with the `@` aliases in `tsconfig.json`
 - TODO: folder structure (features vs. layers)
 - TODO: component patterns and naming
