@@ -2,13 +2,13 @@ import CheckboxField from "@components/composites/CheckboxField"
 import RadioField from "@components/composites/RadioField"
 import Button from "@components/elements/Button"
 
-import styles from "./ThemeSection.module.css"
+import s from "./ThemeSection.module.css"
 
 // Temporary: scratch space for testing component theming
 export default function ThemeSection() {
   return (
-    <section className={styles.themeSection}>
-      <div className={styles.content}>
+    <section className={s.themeSection}>
+      <div className={s.content}>
         <h1>Heading 1</h1>
         <h2>Heading 2</h2>
         <h3>Heading 3</h3>
@@ -89,9 +89,9 @@ export default function ThemeSection() {
         </fieldset>
 
         <h2>Button component</h2>
-        <div className={styles.buttons}>
-          <Button className={styles.button}>Themed</Button>
-          <Button className={styles.button} disabled>
+        <div className={s.buttons}>
+          <Button className={s.button}>Themed</Button>
+          <Button className={s.button} disabled>
             Disabled
           </Button>
           <Button>Unstyled</Button>

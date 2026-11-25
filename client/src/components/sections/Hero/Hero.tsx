@@ -1,7 +1,7 @@
 import Button from "@components/elements/Button"
 import useTheme from "@hooks/useTheme"
 
-import styles from "./Hero.module.css"
+import s from "./Hero.module.css"
 
 export default function Hero() {
   const { theme, setTheme } = useTheme()
@@ -11,10 +11,10 @@ export default function Hero() {
   }
 
   return (
-    <section className={styles.hero}>
+    <section className={s.hero}>
       <div>
-        <h1 className={styles.title}>Ryan Murphy</h1>
-        <Button className={styles.toggle} onClick={handleThemeToggle}>
+        <h1 className={s.title}>Ryan Murphy</h1>
+        <Button className={s.toggle} onClick={handleThemeToggle}>
           Theme: {theme}
         </Button>
       </div>

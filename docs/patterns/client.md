@@ -7,7 +7,7 @@
 
 ## Styling
 
-- Each component or page that needs styles has a `<Name>.module.css` beside it, imported as `styles`.
+- Each component or page that needs styles has a `<Name>.module.css` beside it, imported as `s`.
 - No inline CSS: no `style` props or attributes.
 - Global styles live only in `client/src/styles/global/`.
 - Use theme tokens for color, not raw values.

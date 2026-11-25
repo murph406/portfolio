@@ -1,14 +1,14 @@
 import { Link } from "react-router"
 
-import styles from "./NotFound.module.css"
+import s from "./NotFound.module.css"
 
 export default function NotFound() {
   return (
-    <main className={styles.page}>
+    <main className={s.page}>
       <div>
-        <h1 className={styles.code}>404</h1>
-        <p className={styles.message}>Page not found</p>
-        <Link className={styles.link} to="/">Back to home</Link>
+        <h1 className={s.code}>404</h1>
+        <p className={s.message}>Page not found</p>
+        <Link className={s.link} to="/">Back to home</Link>
       </div>
     </main>
   )

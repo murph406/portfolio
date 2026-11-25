@@ -2,7 +2,7 @@ import type { ComponentProps } from "react"
 
 import Checkbox from "@components/elements/Checkbox"
 
-import styles from "./CheckboxField.module.css"
+import s from "./CheckboxField.module.css"
 
 type CheckboxFieldProps = Omit<ComponentProps<"input">, "type" | "className"> & {
   label: string
@@ -10,7 +10,7 @@ type CheckboxFieldProps = Omit<ComponentProps<"input">, "type" | "className"> & 
 
 export default function CheckboxField({ label, ...rest }: CheckboxFieldProps) {
   return (
-    <label className={styles.checkboxField}>
+    <label className={s.checkboxField}>
       <Checkbox {...rest} />
       {label}
     </label>
