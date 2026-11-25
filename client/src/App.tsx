@@ -1,4 +1,4 @@
-import ThemeButton from "./components/elements/ThemeButton";
+import ThemeButton from "@components/elements/ThemeButton"
 
 export default function App() {
   return (
@@ -8,5 +8,5 @@ export default function App() {
         <ThemeButton />
       </div>
     </main>
-  );
+  )
 }

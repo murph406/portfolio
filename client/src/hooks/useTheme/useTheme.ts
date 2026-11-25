@@ -1,7 +1,8 @@
-import { useSyncExternalStore } from "react";
-import { getTheme, setTheme, subscribe } from "../../lib/Theme";
+import { useSyncExternalStore } from "react"
+
+import { getTheme, setTheme, subscribe } from "@lib/Theme"
 
 export default function useTheme() {
-  const theme = useSyncExternalStore(subscribe, getTheme);
-  return { theme, setTheme };
+  const theme = useSyncExternalStore(subscribe, getTheme)
+  return { theme, setTheme }
 }

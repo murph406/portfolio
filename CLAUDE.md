@@ -82,7 +82,7 @@ Build small and iteratively. Never one-shot a feature or a stack.
 - Build (client): `npm run client:build` (from root; typechecks, then Vite build)
 - Dev (api, local): TODO
 - Typecheck (client): `cd client && npm run typecheck`
-- Lint: TODO
+- Lint (client): `npm run client:lint` (from root)
 - Test: TODO
 - Build: TODO
 - Validate infra: TODO (`cfn-lint`?)

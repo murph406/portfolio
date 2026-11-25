@@ -27,10 +27,12 @@ Vite + React SPA. See `/docs/decisions/0001-client-rendering.md`. Build-time pre
 - Build: `npm run build`
 - Test: TODO
 - Typecheck: `npm run typecheck`
-- Lint: TODO
+- Lint: `npm run lint` (autofix: `npm run lint:fix`)
 
 ## Conventions
 
+- Import order and style rules are enforced by `eslint.config.js` (no semicolons)
+- Import across folders with the `@` aliases in `tsconfig.json`
 - TODO: folder structure (features vs. layers)
 - TODO: component patterns and naming
 - TODO: how API types are consumed (from `/shared`?)
