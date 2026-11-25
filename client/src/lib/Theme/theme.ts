@@ -14,13 +14,14 @@ export function setTheme(theme: Theme): void {
   try {
     localStorage.setItem(storageKey, theme)
   } catch {
-    // Storage can be blocked; the theme still applies for this visit.
   }
+
   listeners.forEach((listener) => listener())
 }
 
 export function subscribe(listener: () => void): () => void {
   listeners.add(listener)
+  
   return () => {
     listeners.delete(listener)
   }

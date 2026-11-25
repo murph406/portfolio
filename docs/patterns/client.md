@@ -7,7 +7,7 @@
 - Global styles live only in `client/src/styles/global/`.
 - Use theme tokens for color, not raw values.
 
-Reference: `client/src/pages/Home/`.
+Reference: `client/src/components/sections/Hero/`.
 
 ## Theming
 
