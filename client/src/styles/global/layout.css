@@ -6,4 +6,15 @@
   --content-max: 74rem;
   --gutter: clamp(1.25rem, 5vw, 3rem);
   --page-inline: max(var(--gutter), (100% - var(--content-max)) / 2);
+
+  /* Spacing scale */
+  --space-xs: 0.25rem;
+  --space-sm: 0.5rem;
+  --unit: 0.75rem;
+  --space-md: 1rem;
+  --space-lg: 1.5rem;
+  --space-xl: 2rem;
+
+  --radius: 0.5rem;
+  --transition: 0.25s ease-out;
 }

@@ -1,7 +1,7 @@
 .radioField {
   display: flex;
   align-items: center;
-  gap: 0.35rem;
+  gap: var(--space-sm);
   color: var(--text-1);
   cursor: pointer;
   user-select: none;
