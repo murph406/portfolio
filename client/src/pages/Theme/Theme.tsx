@@ -2,10 +2,10 @@ import CheckboxField from "@components/composites/CheckboxField"
 import RadioField from "@components/composites/RadioField"
 import Button from "@components/elements/Button"
 
-import s from "./ThemeSection.module.css"
+import s from "./Theme.module.css"
 
 // Temporary: scratch space for testing component theming
-export default function ThemeSection() {
+export default function Theme() {
   return (
     <section className={s.themeSection}>
       <div className={s.content}>
@@ -82,7 +82,7 @@ export default function ThemeSection() {
             Textarea
             <textarea placeholder="Placeholder" />
           </label>
-          
+
           <CheckboxField label="Checkbox" defaultChecked />
           <RadioField label="Radio one" name="theme-radio" value="one" defaultChecked />
           <RadioField label="Radio two" name="theme-radio" value="two" />

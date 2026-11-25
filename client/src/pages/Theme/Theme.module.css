@@ -1,6 +1,6 @@
 .themeSection {
   padding: var(--space-xl) var(--space-md);
-  background-color: var(--surface-2);
+  padding-top: calc(5.5rem + var(--space-xl));
   color: var(--text-1);
 }
 

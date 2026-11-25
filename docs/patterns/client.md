@@ -4,6 +4,7 @@
 
 - `components/elements/` holds the bare control (`Radio`, `Checkbox`).
 - `components/composites/<Control>Field` holds one control with its label (`RadioField`, `CheckboxField`).
+- `components/layouts/<Name>` holds a route layout that renders its page through `<Outlet />`.
 
 ## Styling
 
