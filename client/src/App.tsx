@@ -9,9 +9,18 @@ export default function App() {
   }
 
   return (
-    <main>
+    <main
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+        minHeight: "100dvh",
+        textAlign: "center",
+      }}
+    >
       <div>
-        <h1>Hello World</h1>
+        <h1>Ryan Murphy</h1>
         <Button onClick={handleThemeToggle}>
           Theme: {theme}
         </Button>
