@@ -45,7 +45,7 @@ Vite + React SPA. Build-time prerendering can be added later if link previews/SE
 ## Quality Bars
 
 - TODO: accessibility target (WCAG 2.2 AA?)
-- TODO: revisit accessibility of the primary color #2bb673 on light backgrounds (about 2.6:1). Keep the color for now; a companion shade may work for text
+- `--primary` is `#1d7a4e`. Don't use it as text color (about 2.8:1 on the dark surface)
 - TODO: Lighthouse / Core Web Vitals budgets
 - TODO: bundle size budget
 - TODO: SEO + Open Graph requirements

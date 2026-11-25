@@ -41,7 +41,7 @@
 }
 
 .content a {
-  color: var(--primary);
+  color: var(--text-1);
 }
 
 .content mark {

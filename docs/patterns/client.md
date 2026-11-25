@@ -26,6 +26,8 @@ Reference: `client/src/styles/global/theme.css`.
 
 Components use tokens only, with no theme selectors of their own.
 
+Don't use `--primary` as text color: it's too low in contrast on the dark surface. Use a `--text-*` token.
+
 ### Tuning
 
 Edit the saturation and lightness on either side of a token. HSL lightness is not perceived brightness, so recheck contrast after changing a foundation hex.

@@ -4,7 +4,7 @@
  */
 :root {
   /* Foundation: change this hex to re-theme */
-  --primary: #2bb673;
+  --primary: #1d7a4e;
 
   /* Surfaces */
   --surface-1: light-dark(hsl(from var(--primary) h 20% 99%), hsl(from var(--primary) h 10% 15%));
