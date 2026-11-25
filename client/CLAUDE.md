@@ -17,7 +17,7 @@ Vite + React SPA. Build-time prerendering can be added later if link previews/SE
 - TypeScript, React
 - Vite (build/dev), npm
 - Routing: `react-router` v8. Routes live in `src/router/`, pages in `src/pages/<Name>/`
-- TODO: styling approach
+- Styling: scoped CSS Modules (`<Name>.module.css` beside the component); color tokens in `src/styles/global/theme.css`
 - TODO: state / data fetching
 - TODO: testing (unit, component, e2e)
 
@@ -32,6 +32,9 @@ Vite + React SPA. Build-time prerendering can be added later if link previews/SE
 ## Conventions
 
 - Import order and style rules are enforced by `eslint.config.js` (no semicolons)
+- Scope component styles with CSS Modules. No inline CSS (`style` props or attributes). Global styles belong only in `src/styles/global/`
+- Use theme color tokens, not raw color values
+- Styling and theming patterns: `/docs/patterns/client.md`
 - No arrow functions in JSX. Declare handlers as hoisted functions and pass them by name
 - Import across folders with the `@` aliases in `tsconfig.json`
 - TODO: folder structure (features vs. layers)
@@ -42,6 +45,7 @@ Vite + React SPA. Build-time prerendering can be added later if link previews/SE
 ## Quality Bars
 
 - TODO: accessibility target (WCAG 2.2 AA?)
+- TODO: revisit accessibility of the primary color #2bb673 on light backgrounds (about 2.6:1). Keep the color for now; a companion shade may work for text
 - TODO: Lighthouse / Core Web Vitals budgets
 - TODO: bundle size budget
 - TODO: SEO + Open Graph requirements

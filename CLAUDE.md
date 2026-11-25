@@ -64,7 +64,7 @@ Build small and iteratively. Never one-shot a feature or a stack.
 
 ## Tech Stack
 
-- **Client:** TypeScript, React, Vite SPA (ADR 0001). TODO: routing, styling, state
+- **Client:** TypeScript, React, Vite SPA (ADR 0001). react-router, CSS Modules (see client/CLAUDE.md). TODO: state
 - **API:** API Gateway + Lambda. TODO: runtime (Node/TS?), bundler (esbuild?), one Lambda per route vs. router
 - **Infra:** AWS CloudFormation, CloudFront + S3 for static hosting
 - **Monorepo:** TODO: package manager / workspaces (npm, pnpm, yarn), task runner (none, Turborepo, Nx)

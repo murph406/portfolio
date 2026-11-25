@@ -1,6 +1,8 @@
 import Button from "@components/elements/Button"
 import useTheme from "@hooks/useTheme"
 
+import styles from "./Home.module.css"
+
 export default function Home() {
   const { theme, setTheme } = useTheme()
 
@@ -9,19 +11,10 @@ export default function Home() {
   }
 
   return (
-    <main
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-        minHeight: "100dvh",
-        textAlign: "center",
-      }}
-    >
+    <main className={styles.page}>
       <div>
-        <h1>Ryan Murphy</h1>
-        <Button onClick={handleThemeToggle}>
+        <h1 className={styles.title}>Ryan Murphy</h1>
+        <Button className={styles.toggle} onClick={handleThemeToggle}>
           Theme: {theme}
         </Button>
       </div>
