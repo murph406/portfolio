@@ -26,8 +26,6 @@ TODO: diagram (client → CloudFront → S3; client → API Gateway → Lambda)
 | Agents | Claude Code subagents / commands       | `agents/` |
 | Data   | Career source of truth                 | `content/`|
 
-Key decisions and their reasoning are recorded in [`docs/decisions/`](docs/decisions/).
-
 ## Repo Structure
 
 ```
@@ -36,7 +34,7 @@ api/             Lambda handlers
 infra/           CloudFormation templates
 agents/          Scoring agents (site, GitHub, LinkedIn, resume)
 content/         Career data: single source of truth
-docs/decisions/  Architecture decision records
+docs/patterns/   Coding conventions per workspace
 .claude/         Claude Code settings, hooks, agents, commands
 ```
 
@@ -60,37 +58,6 @@ docs/decisions/  Architecture decision records
 
 - TODO: GitHub Actions + AWS OIDC flow
 - TODO: environments (dev / prod)
-
-## Scoring Agents
-
-- TODO: how to run each scorer
-- TODO: where results go and how history is tracked
-- Built on the methodology from *Job Hunting in the Age of AI* (Jerome Hardaway, master.dev) and its AI-Era Job Kit. Agents sharpen real experience; they never invent it.
-
-## AI-Assisted Development
-
-- TODO: short explanation of how `CLAUDE.md` files are layered (root + per workspace)
-- TODO: what guardrails are enforced (permissions, hooks) and why
-- TODO: link to a write-up / blog post about the workflow
-
-## Roadmap
-
-Start small and apply early. New automation gets built when a manual step becomes a real pain, not before.
-
-**Now**
-- [ ] Lean portfolio site: fast, clear, accessible
-- [ ] Career data written up as markdown in `content/` (one file per role/experience)
-- [ ] One strong baseline resume
-- [ ] Decide client rendering approach (SPA vs. prerender vs. Astro); see `client/CLAUDE.md`
-
-**Next**
-- [ ] Scoring agents: site, GitHub, LinkedIn, resume
-- [ ] Tailored resumes per job description, generated as PDF from `content/`
-- [ ] Wins log: dated notes per role for reviews, raises and future searches (private by default)
-
-**Later**
-- [ ] "Get to know me" chat on the site (reads public `content/` only)
-- [ ] Application tracking and score history over time
 
 ## License
 

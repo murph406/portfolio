@@ -26,4 +26,9 @@
 
 - Everything here is public (committed)
 - Raw drafts, exports and anything sensitive go in `/private` (gitignored)
-- TODO: decide what personal info is OK to publish (email? location? phone: no)
+- Exception: `Ryan_Murphy_Resume.docx` is committed on purpose, contact details included
+- TODO: decide what personal info is OK to publish elsewhere (email? location? phone: no)
+
+## Temporary Exception
+
+Until `/content` has a format, the client may hardcode a short bio and tagline. Every claim must still be true.

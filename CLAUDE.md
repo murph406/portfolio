@@ -25,23 +25,21 @@ Methodology follows [*Job Hunting in the Age of AI* (Jerome Hardaway, master.dev
 - **Small, reviewable changes.** One concern per change. Explain the why, not just the what.
 - **Types end to end.** Shared contracts between client and API; no `any` without a comment explaining why.
 - **Cheap by default.** Serverless, no VPC, no always-on resources.
-- **Settled decisions stay settled.** Check `/docs/decisions` before proposing architectural changes.
-- TODO: additional principles as they emerge
 
 ## Repo Map
 
 ```
 /CLAUDE.md              ← you are here
 /client/                TypeScript React SPA → S3 + CloudFront        (see client/CLAUDE.md)
-/api/                   API Gateway + Lambda (no VPC)                  (see api/CLAUDE.md)
-/infra/                 CloudFormation stacks                          (see infra/CLAUDE.md)
+/api/                   API Gateway + Lambda (no VPC)                  (not started)
+/infra/                 CloudFormation stacks                          (not started)
 /agents/                Scoring agents: site, GitHub, LinkedIn, resume (see agents/CLAUDE.md)
 /content/               Career source of truth                         (see content/CLAUDE.md)
-/shared/                TODO: shared types / API contracts (confirm)
-/docs/plans/            Feature plans: numbered steps, each with a verification check
-/docs/patterns/         My conventions per workspace (api.md, infra.md, client.md, ...)
-/.claude/               settings, hooks, subagents, slash commands
-/private/               gitignored: raw resume drafts, LinkedIn exports, personal data
+/shared/                Shared types / API contracts                   (not created)
+/docs/plans/            Feature plans, local only (gitignored)
+/docs/patterns/         My conventions per workspace (client.md so far)
+/.claude/               Skills now; settings, hooks, subagents and commands planned
+/private/               gitignored: resume drafts, LinkedIn exports, personal data
 ```
 
 ## Workflow
@@ -52,7 +50,7 @@ Build small and iteratively. Never one-shot a feature or a stack.
 2. **Review:** I review and edit the plan before any code is written.
 3. **Build one step:** implement only the step I name.
 4. **Stop and verify:** after each step, stop, state exactly how to verify it, and wait. Do not continue to the next step on your own.
-5. **Commit:** once verified, the step is committed and checked off in the plan.
+5. **Commit:** once verified, the step is committed and checked off in the plan. Plans stay local; never commit them.
 6. **Adapt:** if a step reveals something unexpected or is too big, update the plan (or split the step into a sub-plan) before continuing. The plan file is the source of truth.
 
 ## Patterns
@@ -64,40 +62,34 @@ Build small and iteratively. Never one-shot a feature or a stack.
 
 ## Tech Stack
 
-- **Client:** TypeScript, React, Vite SPA (ADR 0001). react-router, CSS Modules (see client/CLAUDE.md). TODO: state
+- **Client:** TypeScript, React, Vite SPA. react-router, CSS Modules (see client/CLAUDE.md)
 - **API:** API Gateway + Lambda. TODO: runtime (Node/TS?), bundler (esbuild?), one Lambda per route vs. router
 - **Infra:** AWS CloudFormation, CloudFront + S3 for static hosting
-- **Monorepo:** TODO: package manager / workspaces (npm, pnpm, yarn), task runner (none, Turborepo, Nx)
+- **Monorepo:** npm, no workspaces; root scripts call each package with `npm --prefix`
 - **CI/CD:** TODO: GitHub Actions, AWS auth via OIDC (no long-lived keys)
 - **Testing:** TODO: unit test framework, e2e, coverage expectations
-- **Lint/format:** TODO: ESLint, Prettier, cfn-lint
+- **Lint/format:** ESLint (client). TODO: cfn-lint
 
 ## Commands
 
-> Exact commands Claude should run. Fill in as tooling is chosen.
+> Exact commands Claude should run, from the root. Add more as tooling is chosen.
 
-- Install: TODO
-- Dev (client): `npm run client:start` (from root; same as `cd client && npm run dev`)
-- Build (client): `npm run client:build` (from root; typechecks, then Vite build)
-- Dev (api, local): TODO
-- Typecheck (client): `cd client && npm run typecheck`
-- Lint (client): `npm run client:lint` (from root)
-- Favicons (client): `npm run client:favicons` (from root; regenerates them from `Logo`, needs Google Chrome)
-- Test: TODO
-- Build: TODO
-- Validate infra: TODO (`cfn-lint`?)
+- Install (client): `npm --prefix client install`
+- Dev (client): `npm run client:start`
+- Build (client): `npm run client:build` (typechecks, then Vite build)
+- Typecheck (client): `npm --prefix client run typecheck`
+- Lint (client): `npm run client:lint`
+- Favicons (client): `npm run client:favicons` (regenerates them from `Logo`, needs Google Chrome)
 - Deploy: TODO (human-run or CI only; see Guardrails)
-- Run scoring agents: TODO
 
 ## Definition of Done
 
 A change is done only when:
 
-- [ ] Typecheck, lint and tests pass for every affected workspace
-- [ ] New behavior has tests (TODO: define what requires tests)
-- [ ] No secrets, personal data or `/private` content in the diff
-- [ ] Relevant CLAUDE.md / docs / ADRs updated if conventions changed
-- [ ] TODO: client-specific bars (a11y, Lighthouse) once defined
+- [ ] Typecheck and lint pass for every affected workspace
+- [ ] Tests pass and cover new behavior, once a workspace has a test setup (none yet)
+- [ ] No secrets, `/private` content or new personal data in the diff
+- [ ] Relevant CLAUDE.md / docs updated if conventions changed
 
 ## Guardrails
 
@@ -131,6 +123,7 @@ Enforcement (CLAUDE.md is guidance; these are the hard limits):
 
 ## Git Workflow
 
+- Work happens on `develop`, not `main`
 - TODO: branch naming (e.g. `feat/`, `fix/`, `chore/`)
 - TODO: commit style (Conventional Commits?)
 - TODO: PR size and description expectations
@@ -138,11 +131,9 @@ Enforcement (CLAUDE.md is guidance; these are the hard limits):
 
 ## Claude Assets (`/.claude`)
 
-- `settings.json`: TODO: permissions, hooks
-- `agents/`: TODO: subagents (scorers, reviewer, etc.)
-- `commands/`: TODO: slash commands, e.g. `/score-resume`, `/score-site`, `/new-adr`
-- `skills/`: TODO
-- All of the above are committed; they are part of the showcase.
+- `skills/`: `favicons`
+- Planned: `settings.json` (permissions, hooks), `agents/` (scorers, reviewer), `commands/` (e.g. `/score-resume`)
+- Shared assets are committed; they are part of the showcase. `settings.local.json` is not.
 
 ## Open Questions
 

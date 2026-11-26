@@ -5,6 +5,10 @@
 - `components/elements/` holds the bare control (`Radio`, `Checkbox`).
 - `components/composites/<Control>Field` holds one control with its label (`RadioField`, `CheckboxField`).
 - `components/layouts/<Name>` holds a route layout that renders its page through `<Outlet />`.
+- `components/sections/<Name>` holds a block of a page or layout (`Header`, `Hero`, `Footer`).
+- `pages/<Name>` holds a route's page, and `hooks/<useName>` holds a shared hook.
+- Each component, page and hook has its own folder, with an `index.ts` that re-exports its default export.
+- Props are typed as `<Name>Props`.
 
 ## Styling
 

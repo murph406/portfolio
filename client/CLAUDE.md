@@ -14,50 +14,39 @@ Vite + React SPA. Build-time prerendering can be added later if link previews/SE
 
 ## Stack
 
-- TypeScript, React
-- Vite (build/dev), npm
 - Routing: `react-router` v8. Routes live in `src/router/`, pages in `src/pages/<Name>/`
 - Styling: scoped CSS Modules (`<Name>.module.css` beside the component); color tokens in `src/styles/global/theme.css`
-- TODO: state / data fetching
 - TODO: testing (unit, component, e2e)
 
 ## Commands
 
 - Dev: `npm run dev`
 - Build: `npm run build`
-- Test: TODO
 - Typecheck: `npm run typecheck`
-- Favicons: `npm run favicons`
 - Lint: `npm run lint` (autofix: `npm run lint:fix`)
+- Favicons: `npm run favicons`
+- Test: TODO
 
 ## Conventions
 
+- Folder layout and component patterns: `/docs/patterns/client.md`
 - Import order and style rules are enforced by `eslint.config.js` (no semicolons)
+- Import across folders with the `@` aliases in `tsconfig.json`
 - Scope component styles with CSS Modules. No inline CSS (`style` props or attributes). Global styles belong only in `src/styles/global/`
 - Use theme color tokens, not raw color values
-- Styling and theming patterns: `/docs/patterns/client.md`
 - No arrow functions in JSX. Declare handlers as hoisted functions and pass them by name
-- Import across folders with the `@` aliases in `tsconfig.json`
-- TODO: folder structure (features vs. layers)
-- TODO: component patterns and naming
-- TODO: how API types are consumed (from `/shared`?)
-- Each page sets its own `<title>` (React 19 document metadata; no helmet library)
-- Career content is rendered from `/content`; never hardcode resume facts in components
+- Each page sets its own `<title>` as `Page name | Ryan Murphy` (React 19 document metadata; no helmet library)
+- Career content is rendered from `/content`; never hardcode resume facts in components. Exception until `/content` has a format: a short, true bio and tagline
 
 ## Quality Bars
 
-- TODO: accessibility target (WCAG 2.2 AA?)
-- `--primary` is `#1d7a4e`. Don't use it as text color (about 2.8:1 on the dark surface)
-- TODO: Lighthouse / Core Web Vitals budgets
-- TODO: bundle size budget
-- TODO: SEO + Open Graph requirements
-- TODO: browser support
+- TODO: accessibility target (proposed: WCAG 2.2 AA)
+- Don't use `--primary` as text color (about 3.35:1 on the dark `--surface-1`; normal text needs 4.5:1)
+- Respect `prefers-reduced-motion` (see `src/hooks/useScrollShrink/`)
+- Browser support: roughly Chrome/Edge 123+, Firefox 128+, Safari 18+
+- TODO: SEO and link previews (meta description, Open Graph, `index.html` title, web manifest name)
 
 ## SPA on CloudFront
 
 - TODO: client-side routing fallback (CloudFront error responses → `index.html`)
 - TODO: cache strategy (hashed assets long-cache, `index.html` no-cache)
-
-## Don'ts
-
-- TODO
