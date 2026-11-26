@@ -2,6 +2,7 @@
 
 ## Components
 
+- `entries/<target>/` holds what boots one build: `index.tsx`, plus `router.ts` if it routes. Pages and everything else stay shared in `src/`.
 - `components/elements/` holds the bare control (`Radio`, `Checkbox`).
 - `components/composites/<Control>Field` holds one control with its label (`RadioField`, `CheckboxField`).
 - `components/layouts/<Name>` holds a route layout that renders its page through `<Outlet />`.

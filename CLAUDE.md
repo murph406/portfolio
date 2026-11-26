@@ -75,8 +75,8 @@ Build small and iteratively. Never one-shot a feature or a stack.
 > Exact commands Claude should run, from the root. Add more as tooling is chosen.
 
 - Install (client): `npm --prefix client install`
-- Dev (client): `npm run client:start`
-- Build (client): `npm run client:build` (typechecks, then Vite build)
+- Dev (client): `npm run client:start:main` or `npm run client:start:maintenance`
+- Build (client): `npm run client:build` (typechecks, then builds `client/dist/main/` and `client/dist/maintenance/`)
 - Typecheck (client): `npm --prefix client run typecheck`
 - Lint (client): `npm run client:lint`
 - Favicons (client): `npm run client:favicons` (regenerates them from `Logo`, needs Google Chrome)

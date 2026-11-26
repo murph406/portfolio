@@ -14,14 +14,22 @@ Vite + React SPA. Build-time prerendering can be added later if link previews/SE
 
 ## Stack
 
-- Routing: `react-router` v8. Routes live in `src/router/`, pages in `src/pages/<Name>/`
+- Routing: `react-router` v8. Routes live in `src/entries/main/router.ts`, pages in `src/pages/<Name>/`
 - Styling: scoped CSS Modules (`<Name>.module.css` beside the component); color tokens in `src/styles/global/theme.css`
 - TODO: testing (unit, component, e2e)
 
+## Entries and Env
+
+- Each build target is a folder in `src/entries/`: `main` (the site) and `maintenance` (one page, no router)
+- `VITE_BUILD_TARGET` picks the entry (default `main`). A new target also goes in `vite.config.ts` and `package.json` scripts
+- Env files are per target: copy `example.env` to `.env.<target>.local` (gitignored; never commit it)
+- `VITE_` values are public: they can be copied into the browser bundle. Never put a secret in one
+
 ## Commands
 
-- Dev: `npm run dev`
-- Build: `npm run build`
+- Dev: `npm run dev:main` or `npm run dev:maintenance`
+- Build: `npm run build` (typechecks, then writes `dist/main/` and `dist/maintenance/`); one target: `npm run build:<target>`
+- Preview: `npm run preview` (main); maintenance: `VITE_BUILD_TARGET=maintenance npm run preview`
 - Typecheck: `npm run typecheck`
 - Lint: `npm run lint` (autofix: `npm run lint:fix`)
 - Favicons: `npm run favicons`
