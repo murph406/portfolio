@@ -27,6 +27,7 @@ Vite + React SPA. Build-time prerendering can be added later if link previews/SE
 - Build: `npm run build`
 - Test: TODO
 - Typecheck: `npm run typecheck`
+- Favicons: `npm run favicons`
 - Lint: `npm run lint` (autofix: `npm run lint:fix`)
 
 ## Conventions

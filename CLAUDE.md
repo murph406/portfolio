@@ -82,6 +82,7 @@ Build small and iteratively. Never one-shot a feature or a stack.
 - Dev (api, local): TODO
 - Typecheck (client): `cd client && npm run typecheck`
 - Lint (client): `npm run client:lint` (from root)
+- Favicons (client): `npm run client:favicons` (from root; regenerates them from `Logo`, needs Google Chrome)
 - Test: TODO
 - Build: TODO
 - Validate infra: TODO (`cfn-lint`?)
