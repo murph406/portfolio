@@ -4,14 +4,27 @@
   flex-direction: column;
   align-items: center;
   padding: var(--space-lg) var(--page-inline);
-  gap: var(--space-lg);
+  gap: var(--space-md);
 }
 
 .brand {
   flex: 1;
 }
 
+.tagline {
+  max-width: 450px;
+  margin: 0;
+  color: var(--text-3);
+  font-size: 0.85rem;
+  text-align: center;
+}
+
 @media (width >= 48rem) {
+  .tagline {
+    align-self: flex-start;
+    text-align: left;
+  }
+
   .brand {
     align-self: flex-start;
   }

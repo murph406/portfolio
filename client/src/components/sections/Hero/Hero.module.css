@@ -5,6 +5,11 @@
   justify-content: center;
   min-height: 100dvh;
   text-align: center;
+
+  p {
+    max-width: 750px;
+  }
+
 }
 
 .title {
