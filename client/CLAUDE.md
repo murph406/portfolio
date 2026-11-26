@@ -41,6 +41,7 @@ Vite + React SPA. Build-time prerendering can be added later if link previews/SE
 - TODO: folder structure (features vs. layers)
 - TODO: component patterns and naming
 - TODO: how API types are consumed (from `/shared`?)
+- Each page sets its own `<title>` (React 19 document metadata; no helmet library)
 - Career content is rendered from `/content`; never hardcode resume facts in components
 
 ## Quality Bars

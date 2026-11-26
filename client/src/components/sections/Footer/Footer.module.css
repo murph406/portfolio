@@ -3,12 +3,19 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: var(--space-lg) var(--page-inline);
   gap: var(--space-md);
+  padding: var(--space-lg) var(--page-inline);
+  text-align: center;
 }
 
-.brand {
-  flex: 1;
+/* A pseudo-element, so the line stops at the content edges instead of spanning the page */
+.footer::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: var(--page-inline);
+  left: var(--page-inline);
+  border-top: 1px solid var(--glass-border);
 }
 
 .tagline {
@@ -16,16 +23,11 @@
   margin: 0;
   color: var(--text-3);
   font-size: 0.85rem;
-  text-align: center;
 }
 
 @media (width >= 48rem) {
-  .tagline {
-    align-self: flex-start;
+  .footer {
+    align-items: flex-start;
     text-align: left;
-  }
-
-  .brand {
-    align-self: flex-start;
   }
 }

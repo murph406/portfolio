@@ -7,7 +7,7 @@
   right: 0;
   left: 0;
   z-index: 10;
-  height: 6.75rem;
+  height: 6rem;
   /* The box keeps its full height, so don't block clicks below the shrunk bar */
   pointer-events: none;
 }
@@ -26,11 +26,12 @@
 }
 
 .backdrop {
-  animation-name: slideUp;
+  animation-name: shrinkUp, showBorder;
   position: absolute;
   inset: 0;
   pointer-events: auto;
-  backdrop-filter: blur(14px) saturate(180%);
+  border-bottom: 1px solid transparent;
+  backdrop-filter: blur(14px);
 }
 
 .content {
@@ -55,9 +56,16 @@
   cursor: pointer;
 }
 
-@keyframes slideUp {
+/* Moves only the bottom edge: sliding the blur above the viewport left a glow at the top */
+@keyframes shrinkUp {
   to {
-    transform: translateY(calc(-1 * var(--shrink)));
+    bottom: var(--shrink);
+  }
+}
+
+@keyframes showBorder {
+  to {
+    border-bottom-color: var(--glass-border);
   }
 }
 
