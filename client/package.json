@@ -4,8 +4,11 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "tsc --noEmit && vite build",
+    "dev:main": "VITE_BUILD_TARGET=main vite",
+    "dev:maintenance": "VITE_BUILD_TARGET=maintenance vite",
+    "build": "tsc --noEmit && npm run build:main && npm run build:maintenance",
+    "build:main": "VITE_BUILD_TARGET=main vite build",
+    "build:maintenance": "VITE_BUILD_TARGET=maintenance vite build",
     "typecheck": "tsc --noEmit",
     "preview": "vite preview",
     "favicons": "node scripts/favicons/generate.mjs",
