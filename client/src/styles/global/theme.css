@@ -32,11 +32,7 @@
   --glass-border: light-dark(hsl(from var(--primary) h 20% 70% / 45%), hsl(from var(--primary) h 20% 85% / 12%));
 }
 
-/* data-theme on <html> picks the side of every light-dark() token. */
+/* The system theme picks the side of every light-dark() token. */
 :root {
-  color-scheme: light;
-}
-
-:root[data-theme="dark"] {
-  color-scheme: dark;
+  color-scheme: light dark;
 }
