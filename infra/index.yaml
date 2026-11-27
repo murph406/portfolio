@@ -12,7 +12,7 @@ Parameters:
       - main
 
 Resources:
-  FrontendS3BucketLogs:
+  WebLogsBucket:
     Type: AWS::S3::Bucket
     Metadata:
       com.aws.cloudformation.Context:
@@ -26,7 +26,7 @@ Resources:
           Value: !Ref Project
         - Key: Stage
           Value: !Ref Stage
-      BucketName: !Sub '${Project}-${Stage}-logs'
+      BucketName: !Sub '${Project}-${Stage}-web-logs'
       OwnershipControls:
         Rules:
           - ObjectOwnership: BucketOwnerEnforced
@@ -39,13 +39,13 @@ Resources:
         Rules:
           - Id: ExpireAccessLogs
             Status: Enabled
-            Prefix: 'FrontendS3/'
+            Prefix: 'web/'
             ExpirationInDays: 30
     
-  FrontendS3BucketLogsPolicy:
+  WebLogsBucketPolicy:
     Type: AWS::S3::BucketPolicy
     Properties:
-      Bucket: !Ref FrontendS3BucketLogs
+      Bucket: !Ref WebLogsBucket
       PolicyDocument:
         Version: '2012-10-17'
         Statement:
@@ -54,10 +54,10 @@ Resources:
             Principal:
               Service: logging.s3.amazonaws.com
             Action: s3:PutObject
-            Resource: !Sub '${FrontendS3BucketLogs.Arn}/FrontendS3/*'
+            Resource: !Sub '${WebLogsBucket.Arn}/web/*'
             Condition:
               ArnLike:
-                aws:SourceArn: !Sub 'arn:${AWS::Partition}:s3:::${Project}-${Stage}'
+                aws:SourceArn: !Sub 'arn:${AWS::Partition}:s3:::${Project}-${Stage}-web'
               StringEquals:
                 aws:SourceAccount: !Ref AWS::AccountId
           - Sid: DenyInsecureTransport
@@ -65,15 +65,15 @@ Resources:
             Principal: '*'
             Action: s3:*
             Resource:
-              - !GetAtt FrontendS3BucketLogs.Arn
-              - !Sub '${FrontendS3BucketLogs.Arn}/*'
+              - !GetAtt WebLogsBucket.Arn
+              - !Sub '${WebLogsBucket.Arn}/*'
             Condition:
               Bool:
                 aws:SecureTransport: 'false'
 
-  FrontendS3Bucket:
+  WebBucket:
     Type: AWS::S3::Bucket
-    DependsOn: FrontendS3BucketLogsPolicy
+    DependsOn: WebLogsBucketPolicy
     Metadata:
       com.aws.cloudformation.Context:
         why: store the built frontend files per stage; private, with access logs
@@ -83,7 +83,7 @@ Resources:
           Value: !Ref Project
         - Key: Stage
           Value: !Ref Stage
-      BucketName: !Sub '${Project}-${Stage}'
+      BucketName: !Sub '${Project}-${Stage}-web'
       OwnershipControls:
         Rules:
           - ObjectOwnership: BucketOwnerEnforced
@@ -93,8 +93,8 @@ Resources:
         IgnorePublicAcls: true
         RestrictPublicBuckets: true
       LoggingConfiguration:
-        DestinationBucketName: !Ref FrontendS3BucketLogs
-        LogFilePrefix: !Sub 'FrontendS3/'
+        DestinationBucketName: !Ref WebLogsBucket
+        LogFilePrefix: !Sub 'web/'
 
   LambdaEdgeRole:
     Type: 'AWS::IAM::Role'
@@ -120,26 +120,26 @@ Resources:
                 - 'lambda.amazonaws.com'
                 - 'edgelambda.amazonaws.com'
 
-  ClientOriginRequestFunction:
+  WebSpaRewriteFunction:
     Type: AWS::Serverless::Function
     Metadata:
       com.aws.cloudformation.Context:
-        why: Lambda@Edge origin-request function that rewrites incoming URIs to the root so the React app handles routing
+        why: Lambda@Edge origin-request function that rewrites app routes to /index.html without changing the browser URL
     Properties:
       Description: >-
-        This Lambda function edits the incoming uri to redirect to the root
-      CodeUri: ./functions/originRequests/client
+        Rewrites app routes to /index.html so react-router can handle them
+      CodeUri: ./functions/originRequests/web
       Handler: index.handler
       Runtime: nodejs24.x
       Timeout: 10
-      FunctionName: !Sub '${Project}-${Stage}-CloudfrontReactOriginRequest'
+      FunctionName: !Sub '${Project}-${Stage}-web-spa-rewrite'
       Role: !GetAtt LambdaEdgeRole.Arn
       AutoPublishAlias: live
       Tags:
         Project: !Ref Project
         Stage: !Ref Stage
 
-  CloudfrontCachePolicy:
+  WebCachePolicy:
     Type: AWS::CloudFront::CachePolicy
     Metadata:
       com.aws.cloudformation.Context:
@@ -149,7 +149,7 @@ Resources:
         DefaultTTL: 300
         MaxTTL: 3600
         MinTTL: 0
-        Name: !Sub 'CloudfrontCachePolicy${Stage}'
+        Name: !Sub '${Project}-${Stage}-web-cache'
         ParametersInCacheKeyAndForwardedToOrigin:
           CookiesConfig:
             CookieBehavior: none
@@ -160,7 +160,7 @@ Resources:
           EnableAcceptEncodingGzip: true
           EnableAcceptEncodingBrotli: true
 
-  CloudFrontOAC:
+  WebOriginAccessControl:
     Type: AWS::CloudFront::OriginAccessControl
     Metadata:
       com.aws.cloudformation.Context:
@@ -168,19 +168,19 @@ Resources:
     Properties:
       OriginAccessControlConfig:
         Description: Default Origin Access Control
-        Name: !Sub '${Project}-${Stage}_Static-Site-Cloudfront-OAC'
+        Name: !Sub '${Project}-${Stage}-web-oac'
         OriginAccessControlOriginType: s3
         SigningBehavior: always
         SigningProtocol: sigv4
 
-  CloudfrontOriginRequestPolicy:
+  WebOriginRequestPolicy:
     Type: AWS::CloudFront::OriginRequestPolicy
     Metadata:
       com.aws.cloudformation.Context:
         why: 'Forwards all query strings to the origin but no cookies or headers, keeping origin requests minimal.'
     Properties:
       OriginRequestPolicyConfig:
-        Name: !Sub 'originPolicyConfiguration${Stage}'
+        Name: !Sub '${Project}-${Stage}-web-origin-request'
         CookiesConfig:
           CookieBehavior: none
         HeadersConfig:
@@ -188,7 +188,7 @@ Resources:
         QueryStringsConfig:
           QueryStringBehavior: all
 
-  CloudfrontDistribution:
+  SiteDistribution:
     Type: AWS::CloudFront::Distribution
     Metadata:
       com.aws.cloudformation.Context:
@@ -196,18 +196,18 @@ Resources:
     Properties:
       DistributionConfig:
         Enabled: true
-        Comment: !Sub '${Project}-${Stage}'
+        Comment: !Sub '${Project}-${Stage}-site'
         Origins:
-          - DomainName: !GetAtt FrontendS3Bucket.RegionalDomainName
-            Id: FrontendOrigin
+          - DomainName: !GetAtt WebBucket.RegionalDomainName
+            Id: WebOrigin
             S3OriginConfig:
               OriginAccessIdentity: ''
-            OriginAccessControlId: !GetAtt CloudFrontOAC.Id
+            OriginAccessControlId: !GetAtt WebOriginAccessControl.Id
         DefaultCacheBehavior:
-          TargetOriginId: FrontendOrigin
+          TargetOriginId: WebOrigin
           ViewerProtocolPolicy: redirect-to-https
-          CachePolicyId: !GetAtt CloudfrontCachePolicy.Id
-          OriginRequestPolicyId: !GetAtt CloudfrontOriginRequestPolicy.Id
+          CachePolicyId: !GetAtt WebCachePolicy.Id
+          OriginRequestPolicyId: !GetAtt WebOriginRequestPolicy.Id
           AllowedMethods:
             - GET
             - HEAD
@@ -215,4 +215,4 @@ Resources:
           LambdaFunctionAssociations:
             - EventType: origin-request
               IncludeBody: true
-              LambdaFunctionARN: !Ref ClientOriginRequestFunction.Version
+              LambdaFunctionARN: !Ref WebSpaRewriteFunction.Version
