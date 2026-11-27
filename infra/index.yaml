@@ -216,3 +216,40 @@ Resources:
             - EventType: origin-request
               IncludeBody: true
               LambdaFunctionARN: !Ref WebSpaRewriteFunction.Version
+
+  WebBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref WebBucket
+      PolicyDocument:
+        Version: '2012-10-17'
+        Id: !Sub '${Project}-${Stage}-web-bucket-policy'
+        Statement:
+          - Sid: AllowCloudFrontRead
+            Effect: Allow
+            Principal:
+              Service: cloudfront.amazonaws.com
+            Condition:
+              StringEquals:
+                AWS:SourceArn: !Sub 'arn:${AWS::Partition}:cloudfront::${AWS::AccountId}:distribution/${SiteDistribution.Id}'
+            Action: s3:GetObject
+            Resource: !Sub '${WebBucket.Arn}/*'
+          - Sid: AllowCloudFrontList
+            Effect: Allow
+            Principal:
+              Service: cloudfront.amazonaws.com
+            Condition:
+              StringEquals:
+                AWS:SourceArn: !Sub 'arn:${AWS::Partition}:cloudfront::${AWS::AccountId}:distribution/${SiteDistribution.Id}'
+            Action: s3:ListBucket
+            Resource: !GetAtt WebBucket.Arn
+          - Sid: DenyInsecureTransport
+            Effect: Deny
+            Principal: '*'
+            Action: s3:*
+            Resource:
+              - !GetAtt WebBucket.Arn
+              - !Sub '${WebBucket.Arn}/*'
+            Condition:
+              Bool:
+                aws:SecureTransport: 'false'
