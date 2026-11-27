@@ -11,53 +11,58 @@
 This repo is three things:
 
 1. **My portfolio:** a production-grade personal site on a serverless AWS stack.
-2. **My job-search toolkit:** agents that score my website, GitHub, LinkedIn and resume so I can see where I stand and track improvement over time.
-3. **How I build with AI:** the `CLAUDE.md` files, agents, commands and hooks in this repo show the workflow I use to develop with AI coding tools, with guardrails.
+2. **My job-search toolkit:** pre-built agents that score my website, GitHub, LinkedIn and resume so I can see where I stand and track improvement over time.
+3. **How I build with AI:** the `CLAUDE.md` files, rules, skills and settings in this repo show the workflow I use to develop with AI coding tools, with guardrails.
 
 ## Architecture
 
-TODO: diagram (client → CloudFront → S3; client → API Gateway → Lambda)
+```
+CloudFront distribution
+├── /api/v1*  → API Gateway → Lambda   (planned)
+└── /*        → private S3 bucket      (React client)
+```
 
-| Layer  | Tech                                   | Folder    |
-| ------ | -------------------------------------- | --------- |
-| Client | TypeScript, React                      | `client/` |
-| API    | API Gateway + Lambda (no VPC)          | `api/`    |
-| Infra  | AWS CloudFormation, CloudFront + S3    | `infra/`  |
-| Agents | Claude Code subagents / commands       | `agents/` |
-| Data   | Career source of truth                 | `content/`|
+| Layer  | Tech                                  | Folder     | Status      |
+| ------ | ------------------------------------- | ---------- | ----------- |
+| Client | TypeScript, React, Vite               | `client/`  | In progress |
+| Infra  | AWS CloudFormation, CloudFront + S3   | `infra/`   | In progress |
+| API    | API Gateway + Lambda (no VPC)         | `api/`     | Not started |
+| Data   | Career source of truth                | `content/` | Not started |
 
 ## Repo Structure
 
 ```
 client/          React SPA
-api/             Lambda handlers
-infra/           CloudFormation templates
-agents/          Scoring agents (site, GitHub, LinkedIn, resume)
+infra/           CloudFormation template and deploy scripts
 content/         Career data: single source of truth
 docs/patterns/   Coding conventions per workspace
-.claude/         Claude Code settings, hooks, agents, commands
+.claude/         Claude Code settings, rules and skills
 ```
 
 ## Getting Started
 
-**Prerequisites:** TODO (Node version, package manager, AWS CLI, cfn-lint)
+**Prerequisites:** Node 24 (what CI uses) and npm. The AWS SAM CLI is only needed to lint the infra template.
 
 ```bash
-# TODO: install
-# TODO: run client locally
-# TODO: run api locally
+npm --prefix client install
+npm run client:start:main
 ```
 
 ## Scripts
 
-| Command | What it does |
-| ------- | ------------ |
-| TODO    | TODO         |
+| Command                            | What it does                          |
+| ---------------------------------- | ------------------------------------- |
+| `npm run client:start:main`        | Run the site locally                  |
+| `npm run client:start:maintenance` | Run the maintenance page locally      |
+| `npm run client:build`             | Typecheck and build both targets      |
+| `npm run client:lint`              | Lint the client                       |
+| `npm run client:favicons`          | Regenerate favicons (needs Chrome)    |
 
 ## Deployment
 
-- TODO: GitHub Actions + AWS deploy flow (access keys in GitHub secrets for now)
-- TODO: environments (dev / prod)
+- GitHub Actions runs on pushes to `develop` and `main`, using AWS access keys stored as GitHub secrets
+- Infra: each branch deploys its own CloudFormation stack
+- Client: the workflow is set up to lint and build; uploading to S3 is not built yet
 
 ## License
 

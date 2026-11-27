@@ -43,10 +43,10 @@ Methodology follows [*Job Hunting in the Age of AI* (Jerome Hardaway, master.dev
 - **API:** API Gateway + Lambda. TODO: runtime (Node/TS?), bundler (esbuild?), one Lambda per route vs. router
 - **Infra:** AWS CloudFormation, CloudFront + S3 for static hosting
 - **Monorepo:** npm, no workspaces; root scripts call each package with `npm --prefix`
-- **CI/CD:** GitHub Actions. `client.yaml` lints and builds the client; `infra.yaml` signs in to AWS and creates the SAM CLI bucket if missing
+- **CI/CD:** GitHub Actions. `client.yaml` lints and builds the client; `infra.yaml` creates the SAM CLI bucket if missing, then packages and deploys the stack
 - **CI AWS auth:** access keys in GitHub secrets (`AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`). This is my chosen standard for now; OIDC may replace it later, so don't switch without asking
 - **Testing:** TODO: unit test framework, e2e, coverage expectations
-- **Lint/format:** ESLint (client). TODO: cfn-lint
+- **Lint/format:** ESLint (client), `sam validate --lint` (infra)
 
 ## Environments & Secrets
 
@@ -139,6 +139,7 @@ Enforcement (CLAUDE.md is guidance; these are the hard limits):
 - Typecheck (client): `npm --prefix client run typecheck`
 - Lint (client): `npm run client:lint`
 - Favicons (client): `npm run client:favicons` (regenerates them from `Logo`, needs Google Chrome)
+- Lint (infra): `sam validate --lint --template-file infra/index.yaml --region us-east-1`
 - Deploy: CI only. Pushing to `develop` or `main` runs `.github/workflows/`. No local deploy command
 
 ## Definition of Done
