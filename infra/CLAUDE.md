@@ -61,7 +61,7 @@ Writing and editing templates locally is fine. Deploys are CI only.
 ## Client Builds
 
 - `npm run client:build` (from the root) writes two builds: `client/dist/main/` and `client/dist/maintenance/`
-- Replaced files are not kept. Hashed assets get new names, so the upload step must also delete files missing from the new build
+- Replaced files are not kept. The upload step (not built yet) uses `aws s3 sync client/dist/main/ s3://<site-bucket> --delete`, so the bucket matches the new build; don't wipe the bucket first
 - TODO: cache strategy (hashed assets long-cache, `index.html` no-cache)
 - TODO: how the maintenance build is served and how to switch to it
 
