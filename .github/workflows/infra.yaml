@@ -15,9 +15,17 @@ jobs:
     runs-on: ubuntu-latest
     environment: ${{ github.ref_name }}
     steps:
-      - name: Configure AWS Credentials
       - uses: actions/checkout@v7
+      - uses: aws-actions/setup-sam@v1
+
+      - name: Extract Branch Name
+        shell: bash
+        run: echo "Stage=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}" >> $GITHUB_ENV
+        
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v6
         with:
           aws-region: 'us-east-1'
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
