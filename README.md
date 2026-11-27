@@ -19,12 +19,12 @@ This repo is three things:
 ```
 CloudFront distribution
 ├── /api/v1*  → API Gateway → Lambda   (planned)
-└── /*        → private S3 bucket      (React client)
+└── /*        → private S3 bucket      (React web app)
 ```
 
 | Layer  | Tech                                  | Folder     | Status      |
 | ------ | ------------------------------------- | ---------- | ----------- |
-| Client | TypeScript, React, Vite               | `client/`  | In progress |
+| Web    | TypeScript, React, Vite               | `web/`     | In progress |
 | Infra  | AWS CloudFormation, CloudFront + S3   | `infra/`   | In progress |
 | API    | API Gateway + Lambda (no VPC)         | `api/`     | Not started |
 | Data   | Career source of truth                | `content/` | Not started |
@@ -32,7 +32,7 @@ CloudFront distribution
 ## Repo Structure
 
 ```
-client/          React SPA
+web/             React SPA
 infra/           CloudFormation template and deploy scripts
 content/         Career data: single source of truth
 docs/patterns/   Coding conventions per workspace
@@ -44,25 +44,25 @@ docs/patterns/   Coding conventions per workspace
 **Prerequisites:** Node 24 (what CI uses) and npm. The AWS SAM CLI is only needed to lint the infra template.
 
 ```bash
-npm --prefix client install
-npm run client:start:main
+npm --prefix web install
+npm run web:start:main
 ```
 
 ## Scripts
 
-| Command                            | What it does                          |
-| ---------------------------------- | ------------------------------------- |
-| `npm run client:start:main`        | Run the site locally                  |
-| `npm run client:start:maintenance` | Run the maintenance page locally      |
-| `npm run client:build`             | Typecheck and build both targets      |
-| `npm run client:lint`              | Lint the client                       |
-| `npm run client:favicons`          | Regenerate favicons (needs Chrome)    |
+| Command                         | What it does                          |
+| ------------------------------- | ------------------------------------- |
+| `npm run web:start:main`        | Run the site locally                  |
+| `npm run web:start:maintenance` | Run the maintenance page locally      |
+| `npm run web:build`             | Typecheck and build both targets      |
+| `npm run web:lint`              | Lint the web app                      |
+| `npm run web:favicons`          | Regenerate favicons (needs Chrome)    |
 
 ## Deployment
 
 - GitHub Actions runs on pushes to `develop` and `main`, using AWS access keys stored as GitHub secrets
 - Infra: each branch deploys its own CloudFormation stack
-- Client: the workflow is set up to lint and build; uploading to S3 is not built yet
+- Web: the workflow is set up to lint and build; uploading to S3 is not built yet
 
 ## License
 

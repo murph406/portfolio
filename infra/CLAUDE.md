@@ -5,7 +5,7 @@
 
 ## Hosting (target)
 
-- One CloudFront distribution. Its root serves the React client (`client/dist/main/`) from a private S3 bucket with Origin Access Control
+- One CloudFront distribution. Its root serves the React web app (`web/dist/main/`) from a private S3 bucket with Origin Access Control
 - The site bucket is read only through CloudFront; viewers are redirected to HTTPS
 - SPA routing: a Lambda@Edge origin-request function rewrites app routes to `index.html`
 - API (not yet): `/api/v1*` goes to API Gateway on the same distribution. **No code for it until I say so**
@@ -18,7 +18,7 @@
 
 - Site bucket (`<Project>-<Stage>`) and its access log bucket (`<Project>-<Stage>-logs`)
 - Log bucket policy: allows S3 log delivery, denies non-HTTPS requests
-- Not yet: CloudFront, Origin Access Control, site bucket policy, Lambda@Edge, client upload
+- Not yet: CloudFront, Origin Access Control, site bucket policy, Lambda@Edge, web upload
 
 ## Layout
 
@@ -58,10 +58,10 @@ Never do these without explicit approval in chat:
 
 Writing and editing templates locally is fine. Deploys are CI only.
 
-## Client Builds
+## Web Builds
 
-- `npm run client:build` (from the root) writes two builds: `client/dist/main/` and `client/dist/maintenance/`
-- Replaced files are not kept. The upload step (not built yet) uses `aws s3 sync client/dist/main/ s3://<site-bucket> --delete`, so the bucket matches the new build; don't wipe the bucket first
+- `npm run web:build` (from the root) writes two builds: `web/dist/main/` and `web/dist/maintenance/`
+- Replaced files are not kept. The upload step (not built yet) uses `aws s3 sync web/dist/main/ s3://<site-bucket> --delete`, so the bucket matches the new build; don't wipe the bucket first
 - TODO: cache strategy (hashed assets long-cache, `index.html` no-cache)
 - TODO: how the maintenance build is served and how to switch to it
 

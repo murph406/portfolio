@@ -138,3 +138,81 @@ Resources:
       Tags:
         Project: !Ref Project
         Stage: !Ref Stage
+
+  CloudfrontCachePolicy:
+    Type: AWS::CloudFront::CachePolicy
+    Metadata:
+      com.aws.cloudformation.Context:
+        why: caches frontend files at CloudFront edge locations (5 min default, 1 hour max) with gzip/brotli compression to speed up page loads and reduce S3 requests
+    Properties:
+      CachePolicyConfig:
+        DefaultTTL: 300
+        MaxTTL: 3600
+        MinTTL: 0
+        Name: !Sub 'CloudfrontCachePolicy${Stage}'
+        ParametersInCacheKeyAndForwardedToOrigin:
+          CookiesConfig:
+            CookieBehavior: none
+          HeadersConfig:
+            HeaderBehavior: none
+          QueryStringsConfig:
+            QueryStringBehavior: none
+          EnableAcceptEncodingGzip: true
+          EnableAcceptEncodingBrotli: true
+
+  CloudFrontOAC:
+    Type: AWS::CloudFront::OriginAccessControl
+    Metadata:
+      com.aws.cloudformation.Context:
+        why: lets CloudFront read from the private frontend S3 bucket using signed requests, so the bucket stays blocked from direct public access
+    Properties:
+      OriginAccessControlConfig:
+        Description: Default Origin Access Control
+        Name: !Sub '${Project}-${Stage}_Static-Site-Cloudfront-OAC'
+        OriginAccessControlOriginType: s3
+        SigningBehavior: always
+        SigningProtocol: sigv4
+
+  CloudfrontOriginRequestPolicy:
+    Type: AWS::CloudFront::OriginRequestPolicy
+    Metadata:
+      com.aws.cloudformation.Context:
+        why: 'Forwards all query strings to the origin but no cookies or headers, keeping origin requests minimal.'
+    Properties:
+      OriginRequestPolicyConfig:
+        Name: !Sub 'originPolicyConfiguration${Stage}'
+        CookiesConfig:
+          CookieBehavior: none
+        HeadersConfig:
+          HeaderBehavior: none
+        QueryStringsConfig:
+          QueryStringBehavior: all
+
+  CloudfrontDistribution:
+    Type: AWS::CloudFront::Distribution
+    Metadata:
+      com.aws.cloudformation.Context:
+        why: single HTTPS entry point for the app; serves the React frontend from the private S3 bucket and routes /api/v1* to API Gateway without caching
+    Properties:
+      DistributionConfig:
+        Enabled: true
+        Comment: !Sub '${Project}-${Stage}'
+        Origins:
+          - DomainName: !GetAtt FrontendS3Bucket.RegionalDomainName
+            Id: FrontendOrigin
+            S3OriginConfig:
+              OriginAccessIdentity: ''
+            OriginAccessControlId: !GetAtt CloudFrontOAC.Id
+        DefaultCacheBehavior:
+          TargetOriginId: FrontendOrigin
+          ViewerProtocolPolicy: redirect-to-https
+          CachePolicyId: !GetAtt CloudfrontCachePolicy.Id
+          OriginRequestPolicyId: !GetAtt CloudfrontOriginRequestPolicy.Id
+          AllowedMethods:
+            - GET
+            - HEAD
+            - OPTIONS
+          LambdaFunctionAssociations:
+            - EventType: origin-request
+              IncludeBody: true
+              LambdaFunctionARN: !Ref ClientOriginRequestFunction.Version

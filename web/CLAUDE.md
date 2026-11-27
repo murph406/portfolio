@@ -1,4 +1,4 @@
-# CLAUDE.md — client
+# CLAUDE.md — web
 
 > TypeScript React SPA, built to static files and served from S3 behind CloudFront.
 > Root rules in `/CLAUDE.md` apply here too.
@@ -37,7 +37,7 @@ Vite + React SPA. Build-time prerendering can be added later if link previews/SE
 
 ## Conventions
 
-- Folder layout and component patterns: `/docs/patterns/client.md`
+- Folder layout and component patterns: `/docs/patterns/web.md`
 - Import order and style rules are enforced by `eslint.config.js` (no semicolons)
 - Import across folders with the `@` aliases in `tsconfig.json`
 - Scope component styles with CSS Modules. No inline CSS (`style` props or attributes). Global styles belong only in `src/styles/global/`

@@ -18,7 +18,7 @@
 
 ## Consumers
 
-- `client`: renders the portfolio
+- `web`: renders the portfolio
 - TODO: resume generator (output formats?)
 
 ## Public vs. Private
@@ -29,4 +29,4 @@
 
 ## Temporary Exception
 
-Until `/content` has a format, the client may hardcode a short bio and tagline. Every claim must still be true.
+Until `/content` has a format, the web app may hardcode a short bio and tagline. Every claim must still be true.

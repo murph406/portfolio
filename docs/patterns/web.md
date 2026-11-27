@@ -1,4 +1,4 @@
-# Client patterns
+# Web patterns
 
 ## Components
 
@@ -15,11 +15,11 @@
 
 - Each component or page that needs styles has a `<Name>.module.css` beside it, imported as `s`.
 - No inline CSS: no `style` props or attributes.
-- Global styles live only in `client/src/styles/global/`.
+- Global styles live only in `web/src/styles/global/`.
 - Use theme tokens for color, not raw values.
 - Gap, padding and margin use the spacing scale in `layout.css`: `--space-xs`, `--space-sm`, `--unit`, `--space-md`, `--space-lg`, `--space-xl`. Corners use `--radius`.
 
-Reference: `client/src/components/sections/Hero/`.
+Reference: `web/src/components/sections/Hero/`.
 
 ## Responsive
 
@@ -31,7 +31,7 @@ Reference: `client/src/components/sections/Hero/`.
 
 ## Theming
 
-Reference: `client/src/styles/global/theme.css`.
+Reference: `web/src/styles/global/theme.css`.
 
 ### Layers
 

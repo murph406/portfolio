@@ -10,8 +10,8 @@ import { fileURLToPath } from "node:url"
 import { chromium } from "playwright-core"
 import { createServer } from "vite"
 
-const clientDir = fileURLToPath(new URL("../..", import.meta.url))
-const outDir = path.resolve(process.argv[2] ?? path.join(clientDir, "public/favicon"))
+const webDir = fileURLToPath(new URL("../..", import.meta.url))
+const outDir = path.resolve(process.argv[2] ?? path.join(webDir, "public/favicon"))
 
 const PNG_FILES = {
   "favicon-16x16.png": 16,
@@ -61,7 +61,7 @@ function toIco(images) {
 }
 
 async function main() {
-  const server = await createServer({ root: clientDir, logLevel: "warn" })
+  const server = await createServer({ root: webDir, logLevel: "warn" })
   let browser
 
   try {

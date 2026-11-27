@@ -14,7 +14,7 @@
 
 This repo is three things at once:
 
-1. **The product:** a production-grade personal portfolio (React client, serverless API, AWS infra)
+1. **The product:** a production-grade personal portfolio (React web app, serverless API, AWS infra)
 2. **The toolkit:** pre-built agents that score my website, GitHub, LinkedIn and resume so I can market myself accurately and track improvement over time.
 3. **The meta-layer:** a public demonstration of how I build software with AI: CLAUDE.md files, agents, commands, hooks and workflows are part of the deliverable.
 
@@ -26,27 +26,38 @@ Methodology follows [*Job Hunting in the Age of AI* (Jerome Hardaway, master.dev
 
 ```
 /CLAUDE.md              ← you are here
-/client/                TypeScript React SPA → S3 + CloudFront        (see client/CLAUDE.md)
+/web/                   TypeScript React SPA → S3 + CloudFront        (see web/CLAUDE.md)
 /api/                   API Gateway + Lambda (no VPC)                  (not started)
 /infra/                 CloudFormation stacks                          (see infra/CLAUDE.md)
 /content/               Career source of truth                         (see content/CLAUDE.md)
 /content/private/       gitignored: resume drafts, LinkedIn exports, personal data
 /shared/                Shared types / API contracts                   (not created)
 /docs/plans/            Feature plans, local only (gitignored)
-/docs/patterns/         My conventions per workspace (client.md so far)
+/docs/patterns/         My conventions per workspace (web.md so far)
 /.claude/               Skills, rules, settings; hooks and commands planned
 ```
 
+## Naming
+
+Part first, then what it is. The same part word is used in folders, scripts, workflows and AWS.
+
+- Parts: `Web` (browser app, `web/`), `Api` (backend, `api/`), `Site` (shared by everything on the domain, no folder). A new part gets its own word
+- AWS logical ID: `<Part><Thing>` (`WebCachePolicy`). Physical name: `${Project}-${Stage}-<part>-<thing>`
+- Root script: `<part>:<task>` (`web:build`). Workflow: `<part>.yaml`
+- A resource tied to no single part keeps a descriptive name (`LambdaEdgeRole`)
+- "client" is an ordinary word for a user-facing app, not a folder or resource name
+- TODO: infra resources and the function folder still use the old names
+
 ## Tech Stack
 
-- **Client:** TypeScript, React, Vite SPA. react-router, CSS Modules (see client/CLAUDE.md)
+- **Web:** TypeScript, React, Vite SPA. react-router, CSS Modules (see web/CLAUDE.md)
 - **API:** API Gateway + Lambda. TODO: runtime (Node/TS?), bundler (esbuild?), one Lambda per route vs. router
 - **Infra:** AWS CloudFormation, CloudFront + S3 for static hosting
 - **Monorepo:** npm, no workspaces; root scripts call each package with `npm --prefix`
-- **CI/CD:** GitHub Actions. `client.yaml` lints and builds the client; `infra.yaml` creates the SAM CLI bucket if missing, then packages and deploys the stack
+- **CI/CD:** GitHub Actions. `web.yaml` lints and builds the web app; `infra.yaml` creates the SAM CLI bucket if missing, then packages and deploys the stack
 - **CI AWS auth:** access keys in GitHub secrets (`AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`). This is my chosen standard for now; OIDC may replace it later, so don't switch without asking
 - **Testing:** TODO: unit test framework, e2e, coverage expectations
-- **Lint/format:** ESLint (client), `sam validate --lint` (infra)
+- **Lint/format:** ESLint (web), `sam validate --lint` (infra)
 
 ## Environments & Secrets
 
@@ -78,7 +89,7 @@ Methodology follows [*Job Hunting in the Age of AI* (Jerome Hardaway, master.dev
 - **Sharpen, never invent.** AI improves what is true; it never fabricates experience, metrics, titles, dates or skills. Any career claim must trace back to `/content`. If a fact is missing, ask. Do not fill the gap.
 - **Ask before acting outside the code.** Proposing is free; deploying, deleting and spending money are not (see Guardrails).
 - **Small, reviewable changes.** One concern per change. Explain the why, not just the what.
-- **Types end to end.** Shared contracts between client and API; no `any` without a comment explaining why.
+- **Types end to end.** Shared contracts between web and API; no `any` without a comment explaining why.
 - **Cheap by default.** Serverless, no VPC, no always-on resources.
 
 ## Workflow
@@ -133,12 +144,12 @@ Enforcement (CLAUDE.md is guidance; these are the hard limits):
 
 > Exact commands Claude should run, from the root. Add more as tooling is chosen.
 
-- Install (client): `npm --prefix client install`
-- Dev (client): `npm run client:start:main` or `npm run client:start:maintenance`
-- Build (client): `npm run client:build` (typechecks, then builds `client/dist/main/` and `client/dist/maintenance/`)
-- Typecheck (client): `npm --prefix client run typecheck`
-- Lint (client): `npm run client:lint`
-- Favicons (client): `npm run client:favicons` (regenerates them from `Logo`, needs Google Chrome)
+- Install (web): `npm --prefix web install`
+- Dev (web): `npm run web:start:main` or `npm run web:start:maintenance`
+- Build (web): `npm run web:build` (typechecks, then builds `web/dist/main/` and `web/dist/maintenance/`)
+- Typecheck (web): `npm --prefix web run typecheck`
+- Lint (web): `npm run web:lint`
+- Favicons (web): `npm run web:favicons` (regenerates them from `Logo`, needs Google Chrome)
 - Lint (infra): `sam validate --lint --template-file infra/index.yaml --region us-east-1`
 - Deploy: CI only. Pushing to `develop` or `main` runs `.github/workflows/`. No local deploy command
 
@@ -155,7 +166,7 @@ A change is done only when:
 
 - Work happens on `develop`, not `main`
 - Branches: `feat/`, `fix/`, `docs/` off `develop`
-- Commits: Conventional Commits, e.g. `feat(client): add hero`
+- Commits: Conventional Commits, e.g. `feat(web): add hero`
 - PRs: one concern each, ideally under ~300 changed lines; description says what, why and how it was verified
 - Claude Code may commit to feature branches after a step is verified. Never to `develop` or `main`. Chat sessions never write, commit or push
 

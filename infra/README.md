@@ -7,7 +7,7 @@ AWS infrastructure for the portfolio, defined with CloudFormation. **In progress
 ```
 CloudFront distribution
 ├── /api/v1*  → API Gateway        (later)
-└── /*        → private S3 bucket  (React client)
+└── /*        → private S3 bucket  (React web app)
 ```
 
 A Lambda@Edge function sends app routes to `index.html`.

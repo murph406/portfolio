@@ -1,4 +1,4 @@
-name: Deploy client
+name: Deploy web
 
 on:
   push:
@@ -6,9 +6,9 @@ on:
       - develop
       - main
     paths:
-      - client/**
+      - web/**
       - package.json
-      - .github/workflows/client.yaml
+      - .github/workflows/web.yaml
 jobs:
   deploy:
     if: github.ref_name == 'develop' || github.ref_name == 'main'
@@ -28,13 +28,13 @@ jobs:
         with:
           node-version: 24
           cache: npm
-          cache-dependency-path: client/package-lock.json
+          cache-dependency-path: web/package-lock.json
 
       - name: Install dependencies
-        run: npm --prefix client ci
+        run: npm --prefix web ci
 
       - name: Lint
-        run: npm run client:lint
+        run: npm run web:lint
 
       - name: Build
-        run: npm run client:build
+        run: npm run web:build

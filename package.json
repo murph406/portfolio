@@ -2,10 +2,10 @@
   "name": "portfolio",
   "private": true,
   "scripts": {
-    "client:start:main": "npm --prefix client run dev:main",
-    "client:start:maintenance": "npm --prefix client run dev:maintenance",
-    "client:build": "npm --prefix client run build",
-    "client:lint": "npm --prefix client run lint",
-    "client:favicons": "npm --prefix client run favicons"
+    "web:start:main": "npm --prefix web run dev:main",
+    "web:start:maintenance": "npm --prefix web run dev:maintenance",
+    "web:build": "npm --prefix web run build",
+    "web:lint": "npm --prefix web run lint",
+    "web:favicons": "npm --prefix web run favicons"
   }
 }
