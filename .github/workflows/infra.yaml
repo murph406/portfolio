@@ -8,7 +8,7 @@ on:
     paths:
       - infra/**
       - .github/workflows/infra.yaml
-env: 
+env:
   Project: ${{ vars.PROJECT }}
 
 jobs:
@@ -23,11 +23,11 @@ jobs:
       - name: Extract Branch Name
         shell: bash
         run: echo "Stage=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}" >> $GITHUB_ENV
-        
+
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v6
         with:
-          aws-region: 'us-east-1'
+          aws-region: "us-east-1"
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
@@ -47,3 +47,20 @@ jobs:
           chmod +x ./scripts/set-parameter-overrides.sh
           ./scripts/set-parameter-overrides.sh
           ./scripts/print-parameter-overrides.sh
+
+      - name: Build Cloudformation Package
+        working-directory: infra
+        run: |
+          aws cloudformation package \
+          --template-file ./index.yaml \
+          --output-template-file packaged-template.yaml \
+          --s3-bucket $Project-sam-cli
+
+      - name: Deploy Cloudformation
+        working-directory: infra
+        run: |
+          aws cloudformation deploy \
+          --template-file packaged-template.yaml \
+          --stack-name $Stage-$Project-cloudformation \
+          --capabilities CAPABILITY_IAM CAPABILITY_NAMED_IAM \
+          --parameter-overrides $(./scripts/print-parameter-overrides.sh)

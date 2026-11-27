@@ -1,0 +1,101 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: 'AWS::Serverless-2016-10-31'
+Description: Serverless Lambda, S3, Cloudfront same-domain stack
+
+Parameters:
+  Project:
+    Type: String
+  Stage:
+    Type: String
+    AllowedValues:
+      - develop
+      - main
+
+Resources:
+  FrontendS3BucketLogs:
+    Type: AWS::S3::Bucket
+    Metadata:
+      com.aws.cloudformation.Context:
+        why: store access logs for the frontend S3 bucket, permanently deleted after 30 days
+      guard:
+        SuppressedRules:
+          - S3_BUCKET_LOGGING_ENABLED
+    Properties:
+      Tags:
+        - Key: Project
+          Value: !Ref Project
+        - Key: Stage
+          Value: !Ref Stage
+      BucketName: !Sub '${Project}-${Stage}-logs'
+      OwnershipControls:
+        Rules:
+          - ObjectOwnership: BucketOwnerEnforced
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      LifecycleConfiguration:
+        Rules:
+          - Id: ExpireAccessLogs
+            Status: Enabled
+            Prefix: 'FrontendS3/'
+            ExpirationInDays: 30
+    
+  FrontendS3BucketLogsPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref FrontendS3BucketLogs
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Sid: S3ServerAccessLogsPolicy
+            Effect: Allow
+            Principal:
+              Service: logging.s3.amazonaws.com
+            Action: s3:PutObject
+            Resource: !Sub '${FrontendS3BucketLogs.Arn}/FrontendS3/*'
+            Condition:
+              ArnLike:
+                aws:SourceArn: !Sub 'arn:${AWS::Partition}:s3:::${Project}-${Stage}'
+              StringEquals:
+                aws:SourceAccount: !Ref AWS::AccountId
+          - Sid: DenyInsecureTransport
+            Effect: Deny
+            Principal: '*'
+            Action: s3:*
+            Resource:
+              - !GetAtt FrontendS3BucketLogs.Arn
+              - !Sub '${FrontendS3BucketLogs.Arn}/*'
+            Condition:
+              Bool:
+                aws:SecureTransport: 'false'
+
+  FrontendS3Bucket:
+    Type: AWS::S3::Bucket
+    DependsOn: FrontendS3BucketLogsPolicy
+    Metadata:
+      com.aws.cloudformation.Context:
+        why: store the built frontend files per stage; private, with access logs and versioning for recovery
+    Properties:
+      Tags:
+        - Key: Project
+          Value: !Ref Project
+        - Key: Stage
+          Value: !Ref Stage
+      BucketName: !Sub '${Project}-${Stage}'
+      OwnershipControls:
+        Rules:
+          - ObjectOwnership: BucketOwnerEnforced
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      MetricsConfigurations:
+        - Id: !Sub '${Project}-${Stage}'
+      LoggingConfiguration:
+        DestinationBucketName: !Ref FrontendS3BucketLogs
+        LogFilePrefix: !Sub 'FrontendS3/'
+      VersioningConfiguration:
+        Status: Enabled
