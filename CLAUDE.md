@@ -51,11 +51,11 @@ Methodology follows [*Job Hunting in the Age of AI* (Jerome Hardaway, master.dev
 ## Environments & Secrets
 
 - Environments: `develop` and `main`, each its own stack
-- TODO: stack naming convention
-- TODO: AWS account(s) and default region
+- Stack naming: `portfolio-<stage>` (`portfolio-develop`, `portfolio-main`); split stacks add a suffix (`portfolio-<stage>-<part>`)
+- AWS: one account; stages are separate stacks, not separate accounts. Default region `us-east-1` (keeps Lambda@Edge and ACM in one region). Never commit the account ID
 - Note: Lambda@Edge functions and CloudFront ACM certificates must live in `us-east-1`
-- Secrets live in TODO: SSM Parameter Store / Secrets Manager, never in git
-- TODO: domain / Route 53 setup
+- Secrets live in SSM Parameter Store (`/portfolio/<stage>/<name>`, SecureString), never in git
+- Domain: `ryanmurphy.dev`. TODO: DNS / Route 53 and certificate setup (launch on the cloudfront.net URL first)
 
 ## Cost Guardrails
 
@@ -99,7 +99,7 @@ CloudFormation and GitHub Actions YAML go one block at a time: read `.claude/rul
 Claude must **never** do the following without explicit approval in chat:
 
 - Deploy, update or delete any CloudFormation stack
-- Run `aws` CLI commands against real accounts (read-only `describe`/`list` TODO: decide if allowed)
+- Run `aws` CLI commands. Default is not to run them at all; if I ask for one, it must be read-only (`describe`, `list`, `get`) and must not reveal secret values. Never a command that writes, changes or deletes anything
 - Touch DNS, certificates, IAM or billing
 - Commit or push directly to `main`
 - Commit secrets, `.env` files, or anything from `/content/private`
@@ -152,10 +152,10 @@ A change is done only when:
 ## Git Workflow
 
 - Work happens on `develop`, not `main`
-- TODO: branch naming (e.g. `feat/`, `fix/`, `chore/`)
-- TODO: commit style (Conventional Commits?)
-- TODO: PR size and description expectations
-- TODO: may Claude commit to branches on its own, or only propose diffs?
+- Branches: `feat/`, `fix/`, `docs/` off `develop`
+- Commits: Conventional Commits, e.g. `feat(client): add hero`
+- PRs: one concern each, ideally under ~300 changed lines; description says what, why and how it was verified
+- Claude Code may commit to feature branches after a step is verified. Never to `develop` or `main`. Chat sessions never write, commit or push
 
 ## Claude Assets (`/.claude`)
 
