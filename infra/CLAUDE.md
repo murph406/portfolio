@@ -20,9 +20,10 @@ Logical IDs follow the naming rules in `/CLAUDE.md`.
 
 - `WebBucket` (`<Project>-<Stage>-web`) and `WebLogsBucket` (`<Project>-<Stage>-web-logs`, log prefix `web/`)
 - `WebLogsBucketPolicy`: allows S3 log delivery, denies non-HTTPS requests
+- `WebBucketPolicy`: `SiteDistribution` can read files (`s3:GetObject`), non-HTTPS requests are denied. No `s3:ListBucket` on purpose, so a missing file returns 403, not 404
 - `SiteDistribution`, with `WebCachePolicy`, `WebOriginRequestPolicy` and `WebOriginAccessControl`
 - `WebSpaRewriteFunction` (Lambda@Edge, origin-request) and `LambdaEdgeRole`. CloudFront takes the published version (`.Version`), never `$LATEST` or an alias
-- Not yet: web bucket policy (without it CloudFront gets a 403), compression (`Compress: true`), outputs, web upload
+- Not yet: web upload (the bucket is empty until then), compression (`Compress: true`), outputs
 
 ## Layout
 
@@ -82,7 +83,7 @@ Writing and editing templates locally is fine. Deploys are CI only.
 
 - No secrets, account IDs or credentials in templates or git. This repo is public-facing
 - Secrets live in SSM Parameter Store (see `/CLAUDE.md`)
-- Buckets: all public access blocked, ACLs disabled, HTTPS only (web bucket deny still to be added, with its CloudFront policy)
+- Buckets: all public access blocked, ACLs disabled, HTTPS only (each bucket policy denies non-HTTPS requests)
 - Access logs for the web bucket are permanently deleted after 30 days
 - TODO: least-privilege IAM (the deploy step's IAM capabilities are broader than needed; leave for now)
 

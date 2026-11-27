@@ -234,15 +234,6 @@ Resources:
                 AWS:SourceArn: !Sub 'arn:${AWS::Partition}:cloudfront::${AWS::AccountId}:distribution/${SiteDistribution.Id}'
             Action: s3:GetObject
             Resource: !Sub '${WebBucket.Arn}/*'
-          - Sid: AllowCloudFrontList
-            Effect: Allow
-            Principal:
-              Service: cloudfront.amazonaws.com
-            Condition:
-              StringEquals:
-                AWS:SourceArn: !Sub 'arn:${AWS::Partition}:cloudfront::${AWS::AccountId}:distribution/${SiteDistribution.Id}'
-            Action: s3:ListBucket
-            Resource: !GetAtt WebBucket.Arn
           - Sid: DenyInsecureTransport
             Effect: Deny
             Principal: '*'
