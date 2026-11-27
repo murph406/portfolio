@@ -37,3 +37,11 @@ jobs:
           chmod +x ./infra/scripts/create-sam-cli-s3-bucket.sh
           ./infra/scripts/create-sam-cli-s3-bucket.sh
 
+      - name: Set and Print Overrides
+        shell: bash
+        working-directory: infra
+        run: |
+          chmod +x ./scripts/print-parameter-overrides.sh
+          chmod +x ./scripts/set-parameter-overrides.sh
+          ./scripts/set-parameter-overrides.sh
+          ./scripts/print-parameter-overrides.sh
