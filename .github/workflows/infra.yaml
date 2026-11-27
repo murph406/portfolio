@@ -8,6 +8,8 @@ on:
     paths:
       - infra/**
       - .github/workflows/infra.yaml
+env: 
+  Project: ${{ vars.PROJECT }}
 
 jobs:
   deploy:
