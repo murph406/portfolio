@@ -17,8 +17,8 @@
 
 - `index.yaml`: the CloudFormation template (empty for now)
 - `functions/originRequests/client/`: the SPA rewrite function
-- `scripts/`: deploy helper scripts
-- `/.github/workflows/infra.yaml`: the pipeline (so far it only signs in to AWS, using the `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY` secrets of the branch's GitHub environment)
+- `scripts/`: deploy helper scripts. `create-sam-cli-s3-bucket.sh` creates the `<Project>-sam-cli` S3 bucket if missing
+- `/.github/workflows/infra.yaml`: the pipeline. So far it signs in to AWS (using the `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY` secrets of the branch's GitHub environment), then runs the bucket script. `Project` is a GitHub Actions variable (`rm-portfolio`)
 
 ## Philosophy
 

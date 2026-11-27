@@ -43,7 +43,7 @@ Methodology follows [*Job Hunting in the Age of AI* (Jerome Hardaway, master.dev
 - **API:** API Gateway + Lambda. TODO: runtime (Node/TS?), bundler (esbuild?), one Lambda per route vs. router
 - **Infra:** AWS CloudFormation, CloudFront + S3 for static hosting
 - **Monorepo:** npm, no workspaces; root scripts call each package with `npm --prefix`
-- **CI/CD:** GitHub Actions. `client.yaml` lints and builds the client; `infra.yaml` only signs in to AWS so far
+- **CI/CD:** GitHub Actions. `client.yaml` lints and builds the client; `infra.yaml` signs in to AWS and creates the SAM CLI bucket if missing
 - **CI AWS auth:** access keys in GitHub secrets (`AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`). This is my chosen standard for now; OIDC may replace it later, so don't switch without asking
 - **Testing:** TODO: unit test framework, e2e, coverage expectations
 - **Lint/format:** ESLint (client). TODO: cfn-lint
