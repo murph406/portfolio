@@ -95,3 +95,46 @@ Resources:
       LoggingConfiguration:
         DestinationBucketName: !Ref FrontendS3BucketLogs
         LogFilePrefix: !Sub 'FrontendS3/'
+
+  LambdaEdgeRole:
+    Type: 'AWS::IAM::Role'
+    Metadata:
+      com.aws.cloudformation.Context:
+        why: 'Lambda@Edge needs edgelambda.amazonaws.com to assume this role for CloudFront edge replication.'
+    Properties:
+      Tags:
+        - Key: Project
+          Value: !Ref Project
+      Path: '/'
+      ManagedPolicyArns:
+        - 'arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole'
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Sid: 'AllowLambdaServiceToAssumeRole'
+            Effect: 'Allow'
+            Action:
+              - 'sts:AssumeRole'
+            Principal:
+              Service:
+                - 'lambda.amazonaws.com'
+                - 'edgelambda.amazonaws.com'
+
+  ClientOriginRequestFunction:
+    Type: AWS::Serverless::Function
+    Metadata:
+      com.aws.cloudformation.Context:
+        why: Lambda@Edge origin-request function that rewrites incoming URIs to the root so the React app handles routing
+    Properties:
+      Description: >-
+        This Lambda function edits the incoming uri to redirect to the root
+      CodeUri: ./functions/originRequests/client
+      Handler: index.handler
+      Runtime: nodejs24.x
+      Timeout: 10
+      FunctionName: !Sub '${Project}-${Stage}-CloudfrontReactOriginRequest'
+      Role: !GetAtt LambdaEdgeRole.Arn
+      AutoPublishAlias: live
+      Tags:
+        Project: !Ref Project
+        Stage: !Ref Stage
