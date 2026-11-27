@@ -1,5 +1,5 @@
 node_modules
 dist
 /docs/plans*
-/private/
+/content/private/
 .DS_Store
