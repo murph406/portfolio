@@ -61,6 +61,6 @@ jobs:
         run: |
           aws cloudformation deploy \
           --template-file packaged-template.yaml \
-          --stack-name $Stage-$Project-cloudformation \
+          --stack-name $Project-$Stage \
           --capabilities CAPABILITY_IAM CAPABILITY_NAMED_IAM \
           --parameter-overrides $(./scripts/print-parameter-overrides.sh)

@@ -51,7 +51,7 @@ Methodology follows [*Job Hunting in the Age of AI* (Jerome Hardaway, master.dev
 ## Environments & Secrets
 
 - Environments: `develop` and `main`, each its own stack
-- Stack naming: `portfolio-<stage>` (`portfolio-develop`, `portfolio-main`); split stacks add a suffix (`portfolio-<stage>-<part>`)
+- Stack naming: `rm-portfolio-<stage>` (`rm-portfolio-develop`, `rm-portfolio-main`); split stacks add a suffix (`rm-portfolio-<stage>-<part>`). `rm-portfolio` is the `PROJECT` GitHub variable; the repo itself is `portfolio`
 - AWS: one account; stages are separate stacks, not separate accounts. Default region `us-east-1` (keeps Lambda@Edge and ACM in one region). Never commit the account ID
 - Note: Lambda@Edge functions and CloudFront ACM certificates must live in `us-east-1`
 - Secrets live in SSM Parameter Store (`/portfolio/<stage>/<name>`, SecureString), never in git
@@ -120,6 +120,7 @@ Enforcement (CLAUDE.md is guidance; these are the hard limits):
 - Plan before code (see Workflow). For anything non-trivial, the first reply is the plan, not the diff.
 - Always flag anything uncertain, assumed or skipped, even if everything else went fine.
 - If a reply runs past a screen, cut it before sending.
+- Split replies into "Needs you" (at most one question) and "FYI". Keep FYI to the top 3; offer the rest on request. If possible step through multiple issues 1 question at a time
 
 ## Patterns
 
