@@ -32,7 +32,7 @@ Methodology follows [*Job Hunting in the Age of AI* (Jerome Hardaway, master.dev
 /CLAUDE.md              ← you are here
 /client/                TypeScript React SPA → S3 + CloudFront        (see client/CLAUDE.md)
 /api/                   API Gateway + Lambda (no VPC)                  (not started)
-/infra/                 CloudFormation stacks                          (not started)
+/infra/                 CloudFormation stacks                          (see infra/CLAUDE.md)
 /agents/                Scoring agents: site, GitHub, LinkedIn, resume (see agents/CLAUDE.md)
 /content/               Career source of truth                         (see content/CLAUDE.md)
 /shared/                Shared types / API contracts                   (not created)
@@ -66,7 +66,7 @@ Build small and iteratively. Never one-shot a feature or a stack.
 - **API:** API Gateway + Lambda. TODO: runtime (Node/TS?), bundler (esbuild?), one Lambda per route vs. router
 - **Infra:** AWS CloudFormation, CloudFront + S3 for static hosting
 - **Monorepo:** npm, no workspaces; root scripts call each package with `npm --prefix`
-- **CI/CD:** TODO: GitHub Actions, AWS auth via OIDC (no long-lived keys)
+- **CI/CD:** GitHub Actions, AWS auth via OIDC (no long-lived keys). `.github/workflows/infra.yaml` only signs in so far
 - **Testing:** TODO: unit test framework, e2e, coverage expectations
 - **Lint/format:** ESLint (client). TODO: cfn-lint
 
@@ -109,9 +109,10 @@ Enforcement (CLAUDE.md is guidance; these are the hard limits):
 
 ## Environments & Secrets
 
-- TODO: environments (dev / prod?) and stack naming convention
+- Environments: `develop` and `main`, each its own stack
+- TODO: stack naming convention
 - TODO: AWS account(s) and default region
-- Note: ACM certificates for CloudFront must live in `us-east-1`
+- Note: Lambda@Edge functions and CloudFront ACM certificates must live in `us-east-1`
 - Secrets live in TODO: SSM Parameter Store / Secrets Manager, never in git
 - TODO: domain / Route 53 setup
 

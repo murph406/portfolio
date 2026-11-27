@@ -1,0 +1,6 @@
+# Packaged template output
+packaged*.yaml
+.aws-sam/
+
+# Local parameter overrides
+scripts/.overrides

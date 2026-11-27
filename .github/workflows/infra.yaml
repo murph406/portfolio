@@ -1,0 +1,28 @@
+name: Deploy infrastructure
+
+on:
+  push:
+    branches:
+      - develop
+      - main
+    paths:
+      - infra/**
+      - .github/workflows/infra.yaml
+
+# id-token lets the job request an OIDC token, so no AWS keys are stored
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: ${{ github.ref_name }}
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v6
+        with:
+          aws-region: us-east-1
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
