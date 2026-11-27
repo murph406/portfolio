@@ -15,6 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     environment: ${{ github.ref_name }}
     steps:
+      - name: Configure AWS Credentials
       - uses: actions/checkout@v7
         with:
           aws-region: 'us-east-1'

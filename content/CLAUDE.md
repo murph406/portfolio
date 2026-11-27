@@ -1,7 +1,7 @@
 # CLAUDE.md — content
 
 > Single source of truth for my career data. The site renders it, the resume is generated
-> from it, and the agents score against it.
+> from it.
 > Root rules in `/CLAUDE.md` apply here too.
 
 ## Rules
@@ -20,7 +20,6 @@
 
 - `client`: renders the portfolio
 - TODO: resume generator (output formats?)
-- `agents`: scoring and gap analysis
 
 ## Public vs. Private
 
