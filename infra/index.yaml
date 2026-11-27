@@ -16,7 +16,7 @@ Resources:
     Type: AWS::S3::Bucket
     Metadata:
       com.aws.cloudformation.Context:
-        why: store access logs for the frontend S3 bucket, permanently deleted after 30 days
+        why: store access logs for the web S3 bucket, permanently deleted after 30 days
       guard:
         SuppressedRules:
           - S3_BUCKET_LOGGING_ENABLED
@@ -76,7 +76,7 @@ Resources:
     DependsOn: WebLogsBucketPolicy
     Metadata:
       com.aws.cloudformation.Context:
-        why: store the built frontend files per stage; private, with access logs
+        why: store the built web files per stage; private, with access logs
     Properties:
       Tags:
         - Key: Project
@@ -143,7 +143,7 @@ Resources:
     Type: AWS::CloudFront::CachePolicy
     Metadata:
       com.aws.cloudformation.Context:
-        why: caches frontend files at CloudFront edge locations (5 min default, 1 hour max) with gzip/brotli compression to speed up page loads and reduce S3 requests
+        why: caches web files at CloudFront edge locations (5 min default, 1 hour max) with gzip/brotli compression to speed up page loads and reduce S3 requests
     Properties:
       CachePolicyConfig:
         DefaultTTL: 300
@@ -164,7 +164,7 @@ Resources:
     Type: AWS::CloudFront::OriginAccessControl
     Metadata:
       com.aws.cloudformation.Context:
-        why: lets CloudFront read from the private frontend S3 bucket using signed requests, so the bucket stays blocked from direct public access
+        why: lets CloudFront read from the private web S3 bucket using signed requests, so the bucket stays blocked from direct public access
     Properties:
       OriginAccessControlConfig:
         Description: Default Origin Access Control
@@ -192,7 +192,7 @@ Resources:
     Type: AWS::CloudFront::Distribution
     Metadata:
       com.aws.cloudformation.Context:
-        why: single HTTPS entry point for the app; serves the React frontend from the private S3 bucket and routes /api/v1* to API Gateway without caching
+        why: single HTTPS entry point for the site; serves the React web app from the private S3 bucket
     Properties:
       DistributionConfig:
         Enabled: true
