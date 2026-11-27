@@ -56,7 +56,7 @@ docs/patterns/   Coding conventions per workspace
 
 ## Deployment
 
-- TODO: GitHub Actions + AWS OIDC flow
+- TODO: GitHub Actions + AWS deploy flow (access keys in GitHub secrets for now)
 - TODO: environments (dev / prod)
 
 ## License

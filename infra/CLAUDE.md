@@ -9,7 +9,7 @@
 - SPA routing: a Lambda@Edge origin-request function rewrites app routes to `index.html`
 - API (not yet): `/api/v1*` goes to API Gateway on the same distribution. **No code for it until I say so**
 - Stages: `develop` and `main`, each its own stack
-- CloudFormation templates, deployed from GitHub Actions with OIDC (no long-lived keys)
+- CloudFormation templates, deployed from GitHub Actions with AWS access keys stored as GitHub secrets (my standard for now; OIDC may come later)
 - Custom domain comes later; launch on the cloudfront.net URL
 - The Eddy project's infra is a reference for ideas only. Ask before carrying over any of its details
 
@@ -18,7 +18,7 @@
 - `index.yaml`: the CloudFormation template (empty for now)
 - `functions/originRequests/client/`: the SPA rewrite function
 - `scripts/`: deploy helper scripts
-- `/.github/workflows/infra.yaml`: the pipeline (so far it only signs in to AWS, using the `AWS_ROLE_ARN` secret of the branch's GitHub environment)
+- `/.github/workflows/infra.yaml`: the pipeline (so far it only signs in to AWS, using the `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY` secrets of the branch's GitHub environment)
 
 ## Philosophy
 
