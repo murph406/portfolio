@@ -1,0 +1,5 @@
+{
+  "permissions": {
+    "ask": ["Edit(/infra/**/*.yaml)", "Edit(/.github/workflows/**)"]
+  }
+}

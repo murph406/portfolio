@@ -38,7 +38,7 @@ Methodology follows [*Job Hunting in the Age of AI* (Jerome Hardaway, master.dev
 /shared/                Shared types / API contracts                   (not created)
 /docs/plans/            Feature plans, local only (gitignored)
 /docs/patterns/         My conventions per workspace (client.md so far)
-/.claude/               Skills now; settings, hooks, subagents and commands planned
+/.claude/               Skills, rules, settings; hooks, subagents and commands planned
 /private/               gitignored: resume drafts, LinkedIn exports, personal data
 ```
 
@@ -52,6 +52,8 @@ Build small and iteratively. Never one-shot a feature or a stack.
 4. **Stop and verify:** after each step, stop, state exactly how to verify it, and wait. Do not continue to the next step on your own.
 5. **Commit:** once verified, the step is committed and checked off in the plan. Plans stay local; never commit them.
 6. **Adapt:** if a step reveals something unexpected or is too big, update the plan (or split the step into a sub-plan) before continuing. The plan file is the source of truth.
+
+CloudFormation and GitHub Actions YAML go one block at a time: read `.claude/rules/templates.md` before planning or writing them.
 
 ## Patterns
 
@@ -133,7 +135,9 @@ Enforcement (CLAUDE.md is guidance; these are the hard limits):
 ## Claude Assets (`/.claude`)
 
 - `skills/`: `favicons`
-- Planned: `settings.json` (permissions, hooks), `agents/` (scorers, reviewer), `commands/` (e.g. `/score-resume`)
+- `rules/`: `templates.md` (one block at a time for template YAML)
+- `settings.json`: asks before any template edit
+- Planned: permission denies and hooks in `settings.json`, `agents/` (scorers, reviewer), `commands/` (e.g. `/score-resume`)
 - Shared assets are committed; they are part of the showcase. `settings.local.json` is not.
 
 ## Open Questions
