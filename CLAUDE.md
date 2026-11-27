@@ -138,7 +138,7 @@ Enforcement (CLAUDE.md is guidance; these are the hard limits):
 - Typecheck (client): `npm --prefix client run typecheck`
 - Lint (client): `npm run client:lint`
 - Favicons (client): `npm run client:favicons` (regenerates them from `Logo`, needs Google Chrome)
-- Deploy: TODO (human-run or CI only; see Guardrails)
+- Deploy: CI only. Pushing to `develop` or `main` runs `.github/workflows/`. No local deploy command
 
 ## Definition of Done
 
