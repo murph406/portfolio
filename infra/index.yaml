@@ -206,6 +206,7 @@ Resources:
         DefaultCacheBehavior:
           TargetOriginId: WebOrigin
           ViewerProtocolPolicy: redirect-to-https
+          Compress: true
           CachePolicyId: !GetAtt WebCachePolicy.Id
           OriginRequestPolicyId: !GetAtt WebOriginRequestPolicy.Id
           AllowedMethods:

@@ -23,7 +23,7 @@ Logical IDs follow the naming rules in `/CLAUDE.md`.
 - `WebBucketPolicy`: `SiteDistribution` can read files (`s3:GetObject`), non-HTTPS requests are denied. No `s3:ListBucket` on purpose, so a missing file returns 403, not 404
 - `SiteDistribution`, with `WebCachePolicy`, `WebOriginRequestPolicy` and `WebOriginAccessControl`
 - `WebSpaRewriteFunction` (Lambda@Edge, origin-request) and `LambdaEdgeRole`. CloudFront takes the published version (`.Version`), never `$LATEST` or an alias
-- Not yet: web upload (the bucket is empty until then), compression (`Compress: true`), outputs
+- Not yet: web upload (the bucket is empty until then), outputs
 
 ## Layout
 
