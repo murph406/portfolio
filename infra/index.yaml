@@ -76,7 +76,7 @@ Resources:
     DependsOn: FrontendS3BucketLogsPolicy
     Metadata:
       com.aws.cloudformation.Context:
-        why: store the built frontend files per stage; private, with access logs and versioning for recovery
+        why: store the built frontend files per stage; private, with access logs
     Properties:
       Tags:
         - Key: Project
@@ -92,10 +92,6 @@ Resources:
         BlockPublicPolicy: true
         IgnorePublicAcls: true
         RestrictPublicBuckets: true
-      MetricsConfigurations:
-        - Id: !Sub '${Project}-${Stage}'
       LoggingConfiguration:
         DestinationBucketName: !Ref FrontendS3BucketLogs
         LogFilePrefix: !Sub 'FrontendS3/'
-      VersioningConfiguration:
-        Status: Enabled
