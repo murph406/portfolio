@@ -56,5 +56,5 @@ Vite + React SPA. Build-time prerendering can be added later if link previews/SE
 
 ## SPA on CloudFront
 
-- TODO: client-side routing fallback (CloudFront error responses → `index.html`)
+- Routing fallback: a Lambda@Edge function rewrites app routes to `index.html` (see `infra/CLAUDE.md`). Paths with a `.` pass through, so routes must not contain one
 - TODO: cache strategy (hashed assets long-cache, `index.html` no-cache)

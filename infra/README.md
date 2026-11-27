@@ -1,6 +1,6 @@
 # Infra
 
-AWS infrastructure for the portfolio, defined with CloudFormation. **In progress:** the site bucket and its access log bucket are defined; CloudFront is next.
+AWS infrastructure for the portfolio, defined with CloudFormation. **In progress:** the buckets, CloudFront distribution and routing function are defined. The policy that lets CloudFront read the web bucket is still to come.
 
 ## Planned hosting
 

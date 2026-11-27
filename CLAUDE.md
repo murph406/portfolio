@@ -46,8 +46,6 @@ Part first, then what it is. The same part word is used in folders, scripts, wor
 - Root script: `<part>:<task>` (`web:build`). Workflow: `<part>.yaml`
 - A resource tied to no single part keeps a descriptive name (`LambdaEdgeRole`)
 - "client" is an ordinary word for a user-facing app, not a folder or resource name
-- TODO: infra resources and the function folder still use the old names
-
 ## Tech Stack
 
 - **Web:** TypeScript, React, Vite SPA. react-router, CSS Modules (see web/CLAUDE.md)
