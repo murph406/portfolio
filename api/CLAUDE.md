@@ -15,6 +15,7 @@ CloudFront (`/api/v1*`) → API Gateway → Lambda → `use()` (middleware) → 
 - `src/lib/response/`: response helpers (`ok`, `badRequest`, ...) and the `ApiResponse<T>` envelope
 - `src/lib/vars/`: values read from the environment
 - `openapi/openapi.yaml`: hand-written API docs, shown by `docs/index.html` (local only, never deployed)
+- `bruno/`: Bruno request collection (`environments/local.bru` points at port 8000). Never put a secret in these files; they're committed
 - `samconfig.toml`: local build and `start-api` settings
 
 ## Conventions
@@ -31,7 +32,8 @@ The health check (`src/controllers/health/`) is the reference implementation. No
 1. Controller in `src/controllers/<name>/index.ts`
 2. Function and log group in `template.yaml` (names follow `/CLAUDE.md`; edit one block at a time)
 3. Path in `openapi/openapi.yaml`
-4. If it needs more than `GET`, headers or cookies: CloudFront in `infra/index.yaml` currently allows only `GET`, `HEAD` and `OPTIONS` on `/api/v1*`, and forwards query strings but no headers or cookies
+4. Request in `bruno/`
+5. If it needs more than `GET`, headers or cookies: CloudFront in `infra/index.yaml` currently allows only `GET`, `HEAD` and `OPTIONS` on `/api/v1*`, and forwards query strings but no headers or cookies
 
 ## Security
 
