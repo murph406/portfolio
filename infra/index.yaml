@@ -1,5 +1,5 @@
-AWSTemplateFormatVersion: '2010-09-09'
-Transform: 'AWS::Serverless-2016-10-31'
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: "AWS::Serverless-2016-10-31"
 Description: Serverless Lambda, S3, Cloudfront same-domain stack
 
 Parameters:
@@ -11,7 +11,206 @@ Parameters:
       - develop
       - main
 
+Conditions:
+  IsDevelop:
+    Fn::Equals:
+      - Ref: Stage
+      - develop
+
 Resources:
+  WebLogsBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref WebLogsBucket
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Sid: S3ServerAccessLogsPolicy
+            Effect: Allow
+            Principal:
+              Service: logging.s3.amazonaws.com
+            Action: s3:PutObject
+            Resource: !Sub "${WebLogsBucket.Arn}/web/*"
+            Condition:
+              ArnLike:
+                aws:SourceArn: !Sub "arn:${AWS::Partition}:s3:::${Project}-${Stage}-web"
+              StringEquals:
+                aws:SourceAccount: !Ref AWS::AccountId
+          - Sid: DenyInsecureTransport
+            Effect: Deny
+            Principal: "*"
+            Action: s3:*
+            Resource:
+              - !GetAtt WebLogsBucket.Arn
+              - !Sub "${WebLogsBucket.Arn}/*"
+            Condition:
+              Bool:
+                aws:SecureTransport: "false"
+
+  SiteBasicAuthRole:
+    Type: "AWS::IAM::Role"
+    Condition: IsDevelop
+    Metadata:
+      com.aws.cloudformation.Context:
+        why: lets the develop-only basic auth Lambda@Edge function read its one SSM parameter.
+    Properties:
+      RoleName: !Sub "${Project}-${Stage}-site-basic-auth"
+      Tags:
+        - Key: Project
+          Value: !Ref Project
+        - Key: Stage
+          Value: !Ref Stage
+      Path: "/"
+      ManagedPolicyArns:
+        - "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Sid: "AllowLambdaServiceToAssumeRole"
+            Effect: "Allow"
+            Action:
+              - "sts:AssumeRole"
+            Principal:
+              Service:
+                - "lambda.amazonaws.com"
+                - "edgelambda.amazonaws.com"
+      Policies:
+        - PolicyName: !Sub "${Project}-${Stage}-site-basic-auth-ssm"
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Sid: "AllowReadBasicAuthParameter"
+                Effect: "Allow"
+                Action:
+                  - "ssm:GetParameter"
+                Resource: !Sub "arn:${AWS::Partition}:ssm:${AWS::Region}:${AWS::AccountId}:parameter/portfolio/${Stage}/basic-auth"
+
+  WebCachePolicy:
+    Type: AWS::CloudFront::CachePolicy
+    Metadata:
+      com.aws.cloudformation.Context:
+        why: caches web files at CloudFront edge locations (5 min default, 1 hour max) with gzip/brotli compression to speed up page loads and reduce S3 requests
+    Properties:
+      CachePolicyConfig:
+        DefaultTTL: 300
+        MaxTTL: 3600
+        MinTTL: 0
+        Name: !Sub "${Project}-${Stage}-web-cache"
+        ParametersInCacheKeyAndForwardedToOrigin:
+          CookiesConfig:
+            CookieBehavior: none
+          HeadersConfig:
+            HeaderBehavior: none
+          QueryStringsConfig:
+            QueryStringBehavior: none
+          EnableAcceptEncodingGzip: true
+          EnableAcceptEncodingBrotli: true
+
+  WebOriginRequestPolicy:
+    Type: AWS::CloudFront::OriginRequestPolicy
+    Metadata:
+      com.aws.cloudformation.Context:
+        why: "Forwards all query strings to the origin but no cookies or headers, keeping origin requests minimal."
+    Properties:
+      OriginRequestPolicyConfig:
+        Name: !Sub "${Project}-${Stage}-web-origin-request"
+        CookiesConfig:
+          CookieBehavior: none
+        HeadersConfig:
+          HeaderBehavior: none
+        QueryStringsConfig:
+          QueryStringBehavior: all
+
+  WebBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref WebBucket
+      PolicyDocument:
+        Version: "2012-10-17"
+        Id: !Sub "${Project}-${Stage}-web-bucket-policy"
+        Statement:
+          - Sid: AllowCloudFrontRead
+            Effect: Allow
+            Principal:
+              Service: cloudfront.amazonaws.com
+            Condition:
+              StringEquals:
+                AWS:SourceArn: !Sub "arn:${AWS::Partition}:cloudfront::${AWS::AccountId}:distribution/${SiteDistribution.Id}"
+            Action: s3:GetObject
+            Resource: !Sub "${WebBucket.Arn}/*"
+          - Sid: DenyInsecureTransport
+            Effect: Deny
+            Principal: "*"
+            Action: s3:*
+            Resource:
+              - !GetAtt WebBucket.Arn
+              - !Sub "${WebBucket.Arn}/*"
+            Condition:
+              Bool:
+                aws:SecureTransport: "false"
+
+  LambdaEdgeRole:
+    Type: "AWS::IAM::Role"
+    Metadata:
+      com.aws.cloudformation.Context:
+        why: "Lambda@Edge needs edgelambda.amazonaws.com to assume this role for CloudFront edge replication."
+    Properties:
+      Tags:
+        - Key: Project
+          Value: !Ref Project
+      Path: "/"
+      ManagedPolicyArns:
+        - "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Sid: "AllowLambdaServiceToAssumeRole"
+            Effect: "Allow"
+            Action:
+              - "sts:AssumeRole"
+            Principal:
+              Service:
+                - "lambda.amazonaws.com"
+                - "edgelambda.amazonaws.com"
+
+  WebOriginAccessControl:
+    Type: AWS::CloudFront::OriginAccessControl
+    Metadata:
+      com.aws.cloudformation.Context:
+        why: lets CloudFront read from the private web S3 bucket using signed requests, so the bucket stays blocked from direct public access
+    Properties:
+      OriginAccessControlConfig:
+        Description: Default Origin Access Control
+        Name: !Sub "${Project}-${Stage}-web-oac"
+        OriginAccessControlOriginType: s3
+        SigningBehavior: always
+        SigningProtocol: sigv4
+
+  WebBucket:
+    Type: AWS::S3::Bucket
+    DependsOn: WebLogsBucketPolicy
+    Metadata:
+      com.aws.cloudformation.Context:
+        why: store the built web files per stage; private, with access logs
+    Properties:
+      Tags:
+        - Key: Project
+          Value: !Ref Project
+        - Key: Stage
+          Value: !Ref Stage
+      BucketName: !Sub "${Project}-${Stage}-web"
+      OwnershipControls:
+        Rules:
+          - ObjectOwnership: BucketOwnerEnforced
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      LoggingConfiguration:
+        DestinationBucketName: !Ref WebLogsBucket
+        LogFilePrefix: !Sub "web/"
+
   WebLogsBucket:
     Type: AWS::S3::Bucket
     Metadata:
@@ -26,7 +225,7 @@ Resources:
           Value: !Ref Project
         - Key: Stage
           Value: !Ref Stage
-      BucketName: !Sub '${Project}-${Stage}-web-logs'
+      BucketName: !Sub "${Project}-${Stage}-web-logs"
       OwnershipControls:
         Rules:
           - ObjectOwnership: BucketOwnerEnforced
@@ -39,86 +238,29 @@ Resources:
         Rules:
           - Id: ExpireAccessLogs
             Status: Enabled
-            Prefix: 'web/'
+            Prefix: "web/"
             ExpirationInDays: 30
-    
-  WebLogsBucketPolicy:
-    Type: AWS::S3::BucketPolicy
-    Properties:
-      Bucket: !Ref WebLogsBucket
-      PolicyDocument:
-        Version: '2012-10-17'
-        Statement:
-          - Sid: S3ServerAccessLogsPolicy
-            Effect: Allow
-            Principal:
-              Service: logging.s3.amazonaws.com
-            Action: s3:PutObject
-            Resource: !Sub '${WebLogsBucket.Arn}/web/*'
-            Condition:
-              ArnLike:
-                aws:SourceArn: !Sub 'arn:${AWS::Partition}:s3:::${Project}-${Stage}-web'
-              StringEquals:
-                aws:SourceAccount: !Ref AWS::AccountId
-          - Sid: DenyInsecureTransport
-            Effect: Deny
-            Principal: '*'
-            Action: s3:*
-            Resource:
-              - !GetAtt WebLogsBucket.Arn
-              - !Sub '${WebLogsBucket.Arn}/*'
-            Condition:
-              Bool:
-                aws:SecureTransport: 'false'
 
-  WebBucket:
-    Type: AWS::S3::Bucket
-    DependsOn: WebLogsBucketPolicy
+  SiteBasicAuthFunction:
+    Type: AWS::Serverless::Function
+    Condition: IsDevelop
     Metadata:
       com.aws.cloudformation.Context:
-        why: store the built web files per stage; private, with access logs
+        why: Lambda@Edge viewer-request function that password-protects the develop site before anything is served from cache or origin
     Properties:
+      Description: >-
+        Requires basic auth on the develop distribution
+      CodeUri: ./functions/viewerRequests/siteBasicAuth
+      Handler: index.handler
+      Runtime: nodejs24.x
+      Timeout: 5
+      MemorySize: 128
+      FunctionName: !Sub "${Project}-${Stage}-site-basic-auth"
+      Role: !GetAtt SiteBasicAuthRole.Arn
+      AutoPublishAlias: live
       Tags:
-        - Key: Project
-          Value: !Ref Project
-        - Key: Stage
-          Value: !Ref Stage
-      BucketName: !Sub '${Project}-${Stage}-web'
-      OwnershipControls:
-        Rules:
-          - ObjectOwnership: BucketOwnerEnforced
-      PublicAccessBlockConfiguration:
-        BlockPublicAcls: true
-        BlockPublicPolicy: true
-        IgnorePublicAcls: true
-        RestrictPublicBuckets: true
-      LoggingConfiguration:
-        DestinationBucketName: !Ref WebLogsBucket
-        LogFilePrefix: !Sub 'web/'
-
-  LambdaEdgeRole:
-    Type: 'AWS::IAM::Role'
-    Metadata:
-      com.aws.cloudformation.Context:
-        why: 'Lambda@Edge needs edgelambda.amazonaws.com to assume this role for CloudFront edge replication.'
-    Properties:
-      Tags:
-        - Key: Project
-          Value: !Ref Project
-      Path: '/'
-      ManagedPolicyArns:
-        - 'arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole'
-      AssumeRolePolicyDocument:
-        Version: '2012-10-17'
-        Statement:
-          - Sid: 'AllowLambdaServiceToAssumeRole'
-            Effect: 'Allow'
-            Action:
-              - 'sts:AssumeRole'
-            Principal:
-              Service:
-                - 'lambda.amazonaws.com'
-                - 'edgelambda.amazonaws.com'
+        Project: !Ref Project
+        Stage: !Ref Stage
 
   WebSpaRewriteFunction:
     Type: AWS::Serverless::Function
@@ -132,61 +274,12 @@ Resources:
       Handler: index.handler
       Runtime: nodejs24.x
       Timeout: 10
-      FunctionName: !Sub '${Project}-${Stage}-web-spa-rewrite'
+      FunctionName: !Sub "${Project}-${Stage}-web-spa-rewrite"
       Role: !GetAtt LambdaEdgeRole.Arn
       AutoPublishAlias: live
       Tags:
         Project: !Ref Project
         Stage: !Ref Stage
-
-  WebCachePolicy:
-    Type: AWS::CloudFront::CachePolicy
-    Metadata:
-      com.aws.cloudformation.Context:
-        why: caches web files at CloudFront edge locations (5 min default, 1 hour max) with gzip/brotli compression to speed up page loads and reduce S3 requests
-    Properties:
-      CachePolicyConfig:
-        DefaultTTL: 300
-        MaxTTL: 3600
-        MinTTL: 0
-        Name: !Sub '${Project}-${Stage}-web-cache'
-        ParametersInCacheKeyAndForwardedToOrigin:
-          CookiesConfig:
-            CookieBehavior: none
-          HeadersConfig:
-            HeaderBehavior: none
-          QueryStringsConfig:
-            QueryStringBehavior: none
-          EnableAcceptEncodingGzip: true
-          EnableAcceptEncodingBrotli: true
-
-  WebOriginAccessControl:
-    Type: AWS::CloudFront::OriginAccessControl
-    Metadata:
-      com.aws.cloudformation.Context:
-        why: lets CloudFront read from the private web S3 bucket using signed requests, so the bucket stays blocked from direct public access
-    Properties:
-      OriginAccessControlConfig:
-        Description: Default Origin Access Control
-        Name: !Sub '${Project}-${Stage}-web-oac'
-        OriginAccessControlOriginType: s3
-        SigningBehavior: always
-        SigningProtocol: sigv4
-
-  WebOriginRequestPolicy:
-    Type: AWS::CloudFront::OriginRequestPolicy
-    Metadata:
-      com.aws.cloudformation.Context:
-        why: 'Forwards all query strings to the origin but no cookies or headers, keeping origin requests minimal.'
-    Properties:
-      OriginRequestPolicyConfig:
-        Name: !Sub '${Project}-${Stage}-web-origin-request'
-        CookiesConfig:
-          CookieBehavior: none
-        HeadersConfig:
-          HeaderBehavior: none
-        QueryStringsConfig:
-          QueryStringBehavior: all
 
   SiteDistribution:
     Type: AWS::CloudFront::Distribution
@@ -196,12 +289,12 @@ Resources:
     Properties:
       DistributionConfig:
         Enabled: true
-        Comment: !Sub '${Project}-${Stage}-site'
+        Comment: !Sub "${Project}-${Stage}-site"
         Origins:
           - DomainName: !GetAtt WebBucket.RegionalDomainName
             Id: WebOrigin
             S3OriginConfig:
-              OriginAccessIdentity: ''
+              OriginAccessIdentity: ""
             OriginAccessControlId: !GetAtt WebOriginAccessControl.Id
         DefaultCacheBehavior:
           TargetOriginId: WebOrigin
@@ -218,35 +311,7 @@ Resources:
               IncludeBody: true
               LambdaFunctionARN: !Ref WebSpaRewriteFunction.Version
 
-  WebBucketPolicy:
-    Type: AWS::S3::BucketPolicy
-    Properties:
-      Bucket: !Ref WebBucket
-      PolicyDocument:
-        Version: '2012-10-17'
-        Id: !Sub '${Project}-${Stage}-web-bucket-policy'
-        Statement:
-          - Sid: AllowCloudFrontRead
-            Effect: Allow
-            Principal:
-              Service: cloudfront.amazonaws.com
-            Condition:
-              StringEquals:
-                AWS:SourceArn: !Sub 'arn:${AWS::Partition}:cloudfront::${AWS::AccountId}:distribution/${SiteDistribution.Id}'
-            Action: s3:GetObject
-            Resource: !Sub '${WebBucket.Arn}/*'
-          - Sid: DenyInsecureTransport
-            Effect: Deny
-            Principal: '*'
-            Action: s3:*
-            Resource:
-              - !GetAtt WebBucket.Arn
-              - !Sub '${WebBucket.Arn}/*'
-            Condition:
-              Bool:
-                aws:SecureTransport: 'false'
-
 Outputs:
-  SiteDistributionId:                         
+  SiteDistributionId:
     Description: CloudFront distribution ID, read by the web workflow to invalidate the cache
     Value: !Ref SiteDistribution
