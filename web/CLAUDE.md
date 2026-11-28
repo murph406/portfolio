@@ -48,7 +48,7 @@ Vite + React SPA. Build-time prerendering can be added later if link previews/SE
 
 ## Quality Bars
 
-- TODO: accessibility target (proposed: WCAG 2.2 AA)
+- Accessibility: WCAG 2.2 AA. New and changed UI must meet it; existing code has not been fully checked yet
 - Don't use `--primary` as text color (about 3.35:1 on the dark `--surface-1`; normal text needs 4.5:1)
 - Respect `prefers-reduced-motion` (see `src/hooks/useScrollShrink/`)
 - Browser support: roughly Chrome/Edge 123+, Firefox 128+, Safari 18+
