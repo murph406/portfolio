@@ -17,8 +17,8 @@ jobs:
       - uses: actions/checkout@v7
       - id: filter
         uses: dorny/paths-filter@v3
-        base: ${{ github.ref }}
         with:
+          base: ${{ github.ref }}
           filters: |
             infra:
               - 'infra/**'
