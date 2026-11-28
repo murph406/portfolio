@@ -1,6 +1,7 @@
 name: Deploy infrastructure
 
 on:
+  workflow_call:
   push:
     branches:
       - develop
@@ -64,3 +65,4 @@ jobs:
           --stack-name $Project-$Stage \
           --capabilities CAPABILITY_IAM CAPABILITY_NAMED_IAM \
           --parameter-overrides $(./scripts/print-parameter-overrides.sh)
+

@@ -245,3 +245,8 @@ Resources:
             Condition:
               Bool:
                 aws:SecureTransport: 'false'
+
+Outputs:
+  SiteDistributionId:                         
+    Description: CloudFront distribution ID, read by the web workflow to invalidate the cache
+    Value: !Ref SiteDistribution

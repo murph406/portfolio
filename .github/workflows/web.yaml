@@ -1,6 +1,7 @@
 name: Deploy web
 
 on:
+  workflow_call: 
   push:
     branches:
       - develop
@@ -42,6 +43,14 @@ jobs:
       - name: Upload web build
         run: aws s3 sync web/dist/main/ "s3://${{ vars.PROJECT }}-${{ github.ref_name }}-web" --delete
 
-      # - name: Invalidate Cloudfront
-      #   run: |
-      #     aws cloudfront create-invalidation --distribution-id $DistributionId --paths "/*"
+      - name: Get distribution id
+        run: |
+          DistributionId=$(aws cloudformation describe-stacks \
+            --stack-name "${{ vars.PROJECT }}-${{ github.ref_name }}" \
+            --query "Stacks[0].Outputs[?OutputKey=='SiteDistributionId'].OutputValue" \
+            --output text)
+          echo "DistributionId=$DistributionId" >> "$GITHUB_ENV"
+
+      - name: Invalidate Cloudfront
+        run: |
+          aws cloudfront create-invalidation --distribution-id $DistributionId --paths "/*"

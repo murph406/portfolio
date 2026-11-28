@@ -1,0 +1,17 @@
+name: Deploy all
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - develop
+      - main
+
+jobs:
+  infra:
+    uses: ./.github/workflows/infra.yaml
+    secrets: inherit
+  web:
+    needs: infra
+    uses: ./.github/workflows/web.yaml
+    secrets: inherit
