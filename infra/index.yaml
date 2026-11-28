@@ -16,6 +16,10 @@ Conditions:
     Fn::Equals:
       - Ref: Stage
       - develop
+  IsMain:
+    Fn::Equals:
+      - Ref: Stage
+      - main
 
 Resources:
   WebLogsBucketPolicy:
@@ -290,6 +294,18 @@ Resources:
       DistributionConfig:
         Enabled: true
         Comment: !Sub "${Project}-${Stage}-site"
+        Aliases:
+          Fn::If:
+            - IsMain
+            - - www.ryanmurphy.dev
+            - Ref: AWS::NoValue
+        ViewerCertificate:
+          Fn::If:
+            - IsMain
+            - AcmCertificateArn: !Sub "{{resolve:ssm:/portfolio/${Stage}/certificate-arn}}"
+              SslSupportMethod: sni-only
+              MinimumProtocolVersion: TLSv1.2_2021
+            - Ref: AWS::NoValue
         Origins:
           - DomainName: !GetAtt WebBucket.RegionalDomainName
             Id: WebOrigin
