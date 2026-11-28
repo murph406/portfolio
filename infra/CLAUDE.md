@@ -10,7 +10,7 @@
 - The web bucket is read only through CloudFront; viewers are redirected to HTTPS
 - SPA routing: a Lambda@Edge origin-request function rewrites app routes to `index.html`
 - `develop` only: a Lambda@Edge viewer-request function requires basic auth. `main` is public
-- API (not yet): `/api/v1*` goes to API Gateway on the same distribution. **No code for it until I say so**
+- API: `/api/v1*` goes to API Gateway on the same distribution, uncached. The API is its own stack (`<Project>-<Stage>-api`, `api/template.yaml`). Its raw `execute-api` URL is public on both stages, so it skips develop's basic auth: don't put anything private behind the API without fixing that
 - Stages: `develop` and `main`, each its own stack
 - CloudFormation templates, deployed from GitHub Actions with AWS access keys stored as GitHub secrets (my standard for now; OIDC may come later)
 - `main` is served at `www.ryanmurphy.dev` (and its cloudfront.net URL); `develop` only at its cloudfront.net URL
@@ -25,6 +25,8 @@ Logical IDs follow the naming rules in `/CLAUDE.md`.
 - `WebBucketPolicy`: `SiteDistribution` can read files (`s3:GetObject`), non-HTTPS requests are denied. No `s3:ListBucket` on purpose, so a missing file returns 403, not 404
 - `SiteDistribution`, with `WebCachePolicy`, `WebOriginRequestPolicy` and `WebOriginAccessControl`
 - `WebSpaRewriteFunction` (Lambda@Edge, origin-request) and `LambdaEdgeRole`. CloudFront takes the published version (`.Version`), never `$LATEST` or an alias
+- Parameter `ApiGatewayId`: the API stack's REST API ID, used by `SiteDistribution`'s `ApiOrigin` (origin path `/<Stage>`, HTTPS only, TLSv1.2)
+- `/api/v1*` cache behavior: `GET`, `HEAD` and `OPTIONS` only (a write method needs this changed), managed `CachingDisabled`, `WebOriginRequestPolicy`, and `ApiResponseHeadersPolicy` (security headers)
 - Behind the `IsDevelop` condition: `SiteBasicAuthFunction` (Lambda@Edge, viewer-request) and `SiteBasicAuthRole`, which can read only the basic auth parameter. Each new cache behavior needs this association too, or its path is open on develop
 - Behind the `IsMain` condition: `SiteDistribution`'s alias `www.ryanmurphy.dev` and its ACM certificate (`sni-only`, minimum `TLSv1.2_2021`)
 - Also behind `IsMain`: `SiteRedirectBucket` (`<Project>-<Stage>-site-redirect`, no files, no access logs) and `SiteRedirectDistribution` (alias `ryanmurphy.dev`, same certificate, managed `CachingDisabled` policy, `WebOriginRequestPolicy` to pass query strings)
@@ -38,20 +40,21 @@ Logical IDs follow the naming rules in `/CLAUDE.md`.
 - `functions/viewerRequests/siteBasicAuth/`: basic auth check, attached as viewer-request on the develop distribution only (`SiteBasicAuthFunction`, with its own `SiteBasicAuthRole`)
 - `scripts/`: deploy helper scripts
   - `create-sam-cli-s3-bucket.sh`: creates the `<Project>-sam-cli` bucket if missing
-  - `set-parameter-overrides.sh`: writes `Stage` and `Project` to `scripts/.overrides` (gitignored)
+  - `set-parameter-overrides.sh`: writes `Stage`, `Project` and `ApiGatewayId` to `scripts/.overrides` (gitignored)
   - `print-parameter-overrides.sh`: prints them as `key=value` for the deploy command. Its output is logged, so never add a secret
 
 ## Pipeline
 
-`/.github/workflows/deploy-all.yaml` runs on pushes to `develop` or `main`. It calls `infra.yaml` when `infra/**` or `infra.yaml` changed, then `web.yaml` when `web/**`, the root `package.json` or `web.yaml` changed. Web is skipped if infra fails. A manual run deploys both.
+`/.github/workflows/deploy-all.yaml` runs on pushes to `develop` or `main`. In order, it calls `api.yaml` when `api/**`, the root `package.json` or `api.yaml` changed; `infra.yaml` when `infra/**` or `infra.yaml` changed; and `web.yaml` when `web/**`, the root `package.json` or `web.yaml` changed. A failure stops the parts after it. A manual run deploys all three.
 
 `infra.yaml`:
 
 1. Signs in to AWS with the `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY` secrets of the branch's GitHub environment
 2. Creates the SAM CLI bucket if missing
-3. Writes the parameter overrides
-4. Packages the template
-5. Deploys stack `<Project>-<Stage>`
+3. Reads the `ApiGatewayId` output of stack `<Project>-<Stage>-api`, so that stack must exist and renaming the output breaks this deploy
+4. Writes the parameter overrides
+5. Packages the template
+6. Deploys stack `<Project>-<Stage>`
 
 `Project` comes from the `PROJECT` GitHub variable (`rm-portfolio`).
 
@@ -84,10 +87,10 @@ Writing and editing templates locally is fine. Deploys are CI only.
 ## Conventions
 
 - No `docs/patterns/infra.md` yet. Ask before settling a convention, don't invent one
-- Stack naming is in `/CLAUDE.md`. Parameters are `Project` and `Stage`; buckets are tagged with both
+- Stack naming is in `/CLAUDE.md`. Parameters are `Project`, `Stage` and `ApiGatewayId`; buckets are tagged with both
 - No S3 versioning on any bucket unless I say otherwise
 - Default region `us-east-1`. Lambda@Edge functions and CloudFront ACM certificates must live there
-- TODO: how to split stacks
+- The API is a separate stack; TODO: whether to split further
 - TODO: DNS (Route 53) and certificate (ACM) in a template, CI/CD role, budget alarm
 
 ## Security & Secrets
@@ -103,7 +106,7 @@ Writing and editing templates locally is fine. Deploys are CI only.
 ## Cost
 
 - TODO: AWS Budgets alarm threshold
-- TODO: API Gateway throttling / usage plan limits
+- API throttling is set in `api/template.yaml` (10 requests/second, burst 20). TODO: usage plans
 - TODO: limits on any Lambda that calls an LLM (rate limit, max tokens, kill switch)
 
 ## Commands

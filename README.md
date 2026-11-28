@@ -18,20 +18,21 @@ This repo is three things:
 
 ```
 CloudFront distribution
-├── /api/v1*  → API Gateway → Lambda   (planned)
+├── /api/v1*  → API Gateway → Lambda
 └── /*        → private S3 bucket      (React web app)
 ```
 
 - `www.ryanmurphy.dev` serves the site over HTTPS. `ryanmurphy.dev` redirects to it through a second CloudFront distribution and an S3 redirect bucket
 - The web bucket is private and read only through CloudFront (Origin Access Control)
 - A Lambda@Edge function sends app routes to `index.html`
+- `/api/v1*` goes uncached to the API, which is a separate CloudFormation stack with request throttling
 - The `develop` environment is password protected by a second Lambda@Edge function, with the credential kept in SSM Parameter Store
 
 | Layer  | Tech                                  | Folder     | Status      |
 | ------ | ------------------------------------- | ---------- | ----------- |
 | Web    | TypeScript, React, Vite               | `web/`     | In progress |
 | Infra  | AWS CloudFormation, CloudFront + S3   | `infra/`   | In progress |
-| API    | API Gateway + Lambda (no VPC)         | `api/`     | Local only  |
+| API    | API Gateway + Lambda (no VPC)         | `api/`     | In progress |
 | Data   | Career source of truth                | `content/` | Not started |
 
 ## Repo Structure
@@ -55,7 +56,7 @@ npm --prefix web install
 npm run web:start:main
 ```
 
-The API runs only on your machine for now; it isn't deployed. It has one health check, `GET http://localhost:8000/api/v1`:
+The API has one health check, `GET /api/v1`. To run it locally at `http://localhost:8000/api/v1`:
 
 ```bash
 npm --prefix api install
@@ -88,7 +89,8 @@ sam validate --lint --template-file api/template.yaml --region us-east-1
 ## Deployment
 
 - Pushing to `develop` or `main` runs `.github/workflows/deploy-all.yaml`, using AWS access keys stored as GitHub secrets
-- Only the parts that changed are deployed, infra before web. A manual run deploys both
+- Only the parts that changed are deployed, in the order API, infra, web. A manual run deploys all three
+- API: typecheck, lint, build with SAM, then deploy its own stack
 - Infra: each branch deploys its own CloudFormation stack. The custom domain and apex redirect exist only on `main`, basic auth only on `develop`
 - The ACM certificate, Route 53 records and SSM parameters are set up by hand, outside the template
 - Web: lint, build, upload to S3, then invalidate the CloudFront cache

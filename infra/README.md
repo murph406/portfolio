@@ -1,20 +1,20 @@
 # Infra
 
-AWS infrastructure for the portfolio, defined with CloudFormation. **In progress:** the buckets and their policies, the CloudFront distribution, the routing function, develop-only basic auth, the `main` custom domain and the apex redirect are defined, and CI uploads the web build.
+AWS infrastructure for the portfolio, defined with CloudFormation. **In progress:** the buckets and their policies, the CloudFront distribution, the routing function, the API origin, develop-only basic auth, the `main` custom domain and the apex redirect are defined, and CI uploads the web build.
 
 ## Hosting
 
 ```
 CloudFront distribution
-├── /api/v1*  → API Gateway        (later)
+├── /api/v1*  → API Gateway        (its own stack, see api/)
 └── /*        → private S3 bucket  (React web app)
 ```
 
-`main` is served at `www.ryanmurphy.dev`, and `ryanmurphy.dev` redirects there through a second distribution and an S3 redirect bucket. A Lambda@Edge function sends app routes to `index.html`. On `develop` only, a second one requires basic auth, checked against a value kept in SSM Parameter Store.
+`main` is served at `www.ryanmurphy.dev`, and `ryanmurphy.dev` redirects there through a second distribution and an S3 redirect bucket. API responses aren't cached and get security headers. A Lambda@Edge function sends app routes to `index.html`. On `develop` only, a second one requires basic auth, checked against a value kept in SSM Parameter Store.
 
 ## Deployment
 
-`develop` and `main` each have their own stack (`rm-portfolio-<stage>`). Pushing infra changes to either branch deploys it with GitHub Actions (`.github/workflows/deploy-all.yaml`, which calls `infra.yaml`).
+`develop` and `main` each have their own stack (`rm-portfolio-<stage>`). Pushing infra changes to either branch deploys it with GitHub Actions (`.github/workflows/deploy-all.yaml`, which calls `infra.yaml`). The API stack deploys first, because `infra.yaml` reads the API ID from it.
 
 ## Check the template
 
