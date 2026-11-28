@@ -80,4 +80,4 @@ sam validate --lint --template-file infra/index.yaml --region us-east-1
 
 ## License
 
-TODO
+All rights reserved. You're welcome to read the code, but please don't reuse it without my permission. See [LICENSE](LICENSE).
