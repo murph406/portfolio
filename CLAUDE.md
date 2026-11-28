@@ -65,7 +65,7 @@ Part first, then what it is. The same part word is used in folders, scripts, wor
 - Stack naming: `rm-portfolio-<stage>` (`rm-portfolio-develop`, `rm-portfolio-main`); split stacks add a suffix (`rm-portfolio-<stage>-<part>`). `rm-portfolio` is the `PROJECT` GitHub variable; the repo itself is `portfolio`
 - AWS: one account; stages are separate stacks, not separate accounts. Default region `us-east-1` (keeps Lambda@Edge and ACM in one region). Never commit the account ID
 - Note: Lambda@Edge functions and CloudFront ACM certificates must live in `us-east-1`
-- Secrets live in SSM Parameter Store (`/portfolio/<stage>/<name>`, SecureString), never in git
+- Never hardcode secrets or put them in git. Use SSM Parameter Store (`/portfolio/<stage>/<name>`, SecureString) for secrets wherever it's possible and makes sense
 - Domain: `ryanmurphy.dev`. `main` is served at `www.ryanmurphy.dev`; `ryanmurphy.dev` redirects to it. The Route 53 records and ACM certificate are made by hand (see `infra/CLAUDE.md`)
 
 ## Cost Guardrails
@@ -112,7 +112,7 @@ Claude must **never** do the following without explicit approval in chat:
 - Deploy, update or delete any CloudFormation stack
 - Run `aws` CLI commands. Default is not to run them at all; if I ask for one, it must be read-only (`describe`, `list`, `get`) and must not reveal secret values. Never a command that writes, changes or deletes anything. `settings.json` currently blocks every `aws` command, so I run read-only ones myself
 - Touch DNS, certificates, IAM or billing
-- Commit or push directly to `main`
+- Push directly to `main`
 - Commit secrets, `.env` files, or anything from `/content/private`
 - Fabricate or "enhance" career data (see Core Principles)
 - Create, edit or install any agent or subagent definition, or any agent rule (see Claude Assets)
@@ -168,7 +168,7 @@ A change is done only when:
 - Branches: `feat/`, `fix/`, `docs/` off `develop`. I create them; Claude never does, only flags a name that breaks the convention
 - Commits: Conventional Commits, e.g. `feat(web): add hero`
 - PRs: one concern each, ideally under ~300 changed lines; description says what, why and how it was verified
-- I make all commits. Claude never commits, but may say when it's a good time to. Chat sessions never write, commit or push
+- Only I commit and merge. Claude and any other tool never do either, even with approval; Claude may say when it's a good time to commit
 
 ## Claude Assets (`/.claude`)
 

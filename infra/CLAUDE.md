@@ -59,7 +59,7 @@ Logical IDs follow the naming rules in `/CLAUDE.md`.
 
 - Cheap by default: serverless, no VPC, no always-on resources.
 - Build one resource at a time, following the plan workflow in `/CLAUDE.md`.
-- Everything is defined in a template. The only hand-made exceptions are the SSM parameters (see Security & Secrets), the ACM certificate and the Route 53 records for `www` and the apex.
+- Everything is defined in a template. The only exceptions are the SAM CLI bucket, created by a script in the pipeline, and these hand-made ones: the SSM parameters (see Security & Secrets), the ACM certificate and the Route 53 records for `www` and the apex.
 
 ## Guardrails
 

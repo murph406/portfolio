@@ -9,6 +9,6 @@ description: Regenerate the favicon files in web/public/favicon from the Logo co
 
 1. From the repo root, run `npm run web:favicons`. It needs Google Chrome installed.
 2. Open every PNG in `web/public/favicon/`, not a sample. Check that each matches the Logo: one centered copy of the letters, nothing clipped, expected colors.
-3. Report which files changed (`git status --short web/public/favicon`). Do not commit unless asked.
+3. Report which files changed (`git status --short web/public/favicon`). Never commit.
 
 Run it on macOS: the letters use the system font, so another OS draws them differently.

@@ -22,6 +22,11 @@ CloudFront distribution
 └── /*        → private S3 bucket      (React web app)
 ```
 
+- `www.ryanmurphy.dev` serves the site over HTTPS. `ryanmurphy.dev` redirects to it through a second CloudFront distribution and an S3 redirect bucket
+- The web bucket is private and read only through CloudFront (Origin Access Control)
+- A Lambda@Edge function sends app routes to `index.html`
+- The `develop` environment is password protected by a second Lambda@Edge function, with the credential kept in SSM Parameter Store
+
 | Layer  | Tech                                  | Folder     | Status      |
 | ------ | ------------------------------------- | ---------- | ----------- |
 | Web    | TypeScript, React, Vite               | `web/`     | In progress |
@@ -59,11 +64,18 @@ npm run web:start:main
 | `npm run web:lint`              | Lint the web app                      |
 | `npm run web:favicons`          | Regenerate favicons (needs Chrome)    |
 
+Lint the infra template:
+
+```bash
+sam validate --lint --template-file infra/index.yaml --region us-east-1
+```
+
 ## Deployment
 
 - Pushing to `develop` or `main` runs `.github/workflows/deploy-all.yaml`, using AWS access keys stored as GitHub secrets
 - Only the parts that changed are deployed, infra before web. A manual run deploys both
-- Infra: each branch deploys its own CloudFormation stack
+- Infra: each branch deploys its own CloudFormation stack. The custom domain and apex redirect exist only on `main`, basic auth only on `develop`
+- The ACM certificate, Route 53 records and SSM parameters are set up by hand, outside the template
 - Web: lint, build, upload to S3, then invalidate the CloudFront cache
 
 ## License
