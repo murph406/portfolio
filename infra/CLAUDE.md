@@ -28,7 +28,8 @@ Logical IDs follow the naming rules in `/CLAUDE.md`.
 ## Layout
 
 - `index.yaml`: the CloudFormation template (uses the SAM transform)
-- `functions/originRequests/web/`: the SPA rewrite function. A path without a `.` becomes `/index.html`
+- `functions/originRequests/webSpaRewrite/`: the SPA rewrite function. A path without a `.` becomes `/index.html`
+- `functions/viewRequests/siteBasicAuth/`: basic auth check for develop. Not in the template yet
 - `scripts/`: deploy helper scripts
   - `create-sam-cli-s3-bucket.sh`: creates the `<Project>-sam-cli` bucket if missing
   - `set-parameter-overrides.sh`: writes `Stage` and `Project` to `scripts/.overrides` (gitignored)

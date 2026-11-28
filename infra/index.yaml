@@ -128,7 +128,7 @@ Resources:
     Properties:
       Description: >-
         Rewrites app routes to /index.html so react-router can handle them
-      CodeUri: ./functions/originRequests/web
+      CodeUri: ./functions/originRequests/webSpaRewrite
       Handler: index.handler
       Runtime: nodejs24.x
       Timeout: 10
