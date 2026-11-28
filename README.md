@@ -2,7 +2,7 @@
 
 > Full stack engineer with a product mindset, building and running apps end to end, from the user experience to the infrastructure behind it.
 
-**LinkedIn:** https://www.linkedin.com/in/ryanmurphy-dev · **Live site:** coming soon · **Resume:** coming soon
+**LinkedIn:** https://www.linkedin.com/in/ryanmurphy-dev · **Live site:** https://www.ryanmurphy.dev · **Resume:** coming soon
 
 ---
 
