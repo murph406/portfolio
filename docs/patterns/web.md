@@ -8,6 +8,11 @@
 - `components/layouts/<Name>` holds a route layout that renders its page through `<Outlet />`.
 - `components/sections/<Name>` holds a block of a page or layout (`Header`, `Hero`, `Footer`).
 - `pages/<Name>` holds a route's page, and `hooks/<useName>` holds a shared hook.
+- `components/features/<Name>` holds the UI and logic for one product feature, where `sections/` holds only a block of a page or layout.
+- `shared/pages/` and `shared/modals/` hold pages and modals reused by more than one build target or route.
+- `lib/` holds framework-free helpers and utilities.
+- `store/` holds shared client state. It stays empty until a real feature needs it.
+- `api/` holds the browser's calls to the backend, not the Lambda code in the root `/api/`.
 - Each component, page and hook has its own folder, with an `index.ts` that re-exports its default export.
 - Props are typed as `<Name>Props`.
 

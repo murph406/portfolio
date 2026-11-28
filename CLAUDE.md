@@ -47,6 +47,7 @@ Part first, then what it is. The same part word is used in folders, scripts, wor
 - Root script: `<part>:<task>` (`web:build`). Workflow: `<part>.yaml` (`deploy-all.yaml` calls them)
 - A resource tied to no single part keeps a descriptive name (`LambdaEdgeRole`)
 - "client" is an ordinary word for a user-facing app, not a folder or resource name
+
 ## Tech Stack
 
 - **Web:** TypeScript, React, Vite SPA. react-router, CSS Modules (see web/CLAUDE.md)
@@ -164,7 +165,7 @@ A change is done only when:
 ## Git Workflow
 
 - Work happens on `develop`, not `main`
-- Branches: `feat/`, `fix/`, `docs/` off `develop`
+- Branches: `feat/`, `fix/`, `docs/` off `develop`. I create them; Claude never does, only flags a name that breaks the convention
 - Commits: Conventional Commits, e.g. `feat(web): add hero`
 - PRs: one concern each, ideally under ~300 changed lines; description says what, why and how it was verified
 - Claude Code may commit to feature branches after a step is verified. Never to `develop` or `main`. Chat sessions never write, commit or push
