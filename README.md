@@ -2,7 +2,7 @@
 
 > Full stack engineer with a product mindset, building and running apps end to end, from the user experience to the infrastructure behind it.
 
-**Live site:** https://www.ryanmurphy.dev · **LinkedIn:** https://www.linkedin.com/in/ryanmurphy-dev · **Resume:** https://www.ryanmurphy.dev/resume.pdf
+**LinkedIn:** https://www.linkedin.com/in/ryanmurphy-dev · **Live site:** coming soon · **Resume:** coming soon
 
 ---
 
@@ -11,7 +11,7 @@
 This repo is three things:
 
 1. **My portfolio:** a production-grade personal site on a serverless AWS stack.
-2. **My job-search toolkit:** pre-built agents that score my website, GitHub, LinkedIn and resume so I can see where I stand and track improvement over time.
+2. **My job-search toolkit:** pre-built agents, integrated rather than stored in this repo, that score my website, GitHub, LinkedIn and resume so I can see where I stand and track improvement over time.
 3. **How I build with AI:** the `CLAUDE.md` files, rules, skills and settings in this repo show the workflow I use to develop with AI coding tools, with guardrails.
 
 ## Architecture
@@ -33,10 +33,11 @@ CloudFront distribution
 
 ```
 web/             React SPA
-infra/           CloudFormation template and deploy scripts
+infra/           CloudFormation template, Lambda@Edge function and deploy scripts
 content/         Career data: single source of truth
 docs/patterns/   Coding conventions per workspace
 .claude/         Claude Code settings, rules and skills
+.github/         GitHub Actions workflows
 ```
 
 ## Getting Started
@@ -60,9 +61,10 @@ npm run web:start:main
 
 ## Deployment
 
-- GitHub Actions runs on pushes to `develop` and `main`, using AWS access keys stored as GitHub secrets
+- Pushing to `develop` or `main` runs `.github/workflows/deploy-all.yaml`, using AWS access keys stored as GitHub secrets
+- Only the parts that changed are deployed, infra before web. A manual run deploys both
 - Infra: each branch deploys its own CloudFormation stack
-- Web: the workflow is set up to lint and build; uploading to S3 is not built yet
+- Web: lint, build, upload to S3, then invalidate the CloudFront cache
 
 ## License
 

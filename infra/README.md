@@ -1,6 +1,6 @@
 # Infra
 
-AWS infrastructure for the portfolio, defined with CloudFormation. **In progress:** the buckets and their policies, the CloudFront distribution and the routing function are defined. Uploading the web build is still to come.
+AWS infrastructure for the portfolio, defined with CloudFormation. **In progress:** the buckets and their policies, the CloudFront distribution and the routing function are defined, and CI uploads the web build.
 
 ## Planned hosting
 
@@ -14,7 +14,7 @@ A Lambda@Edge function sends app routes to `index.html`.
 
 ## Deployment
 
-`develop` and `main` each have their own stack (`rm-portfolio-<stage>`). Pushing infra changes to either branch deploys it with GitHub Actions (`.github/workflows/infra.yaml`).
+`develop` and `main` each have their own stack (`rm-portfolio-<stage>`). Pushing infra changes to either branch deploys it with GitHub Actions (`.github/workflows/deploy-all.yaml`, which calls `infra.yaml`).
 
 ## Check the template
 

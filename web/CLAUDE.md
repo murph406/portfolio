@@ -14,7 +14,7 @@ Vite + React SPA. Build-time prerendering can be added later if link previews/SE
 
 ## Stack
 
-- Routing: `react-router` v8. Routes live in `src/entries/main/router.ts`, pages in `src/pages/<Name>/`
+- Routing: `react-router` v8. Routes live in `src/entries/main/router.ts`, pages in `src/pages/<Name>/`. `/theme` is a temporary scratch page that currently ships in the build
 - Styling: scoped CSS Modules (`<Name>.module.css` beside the component); color tokens in `src/styles/global/theme.css`
 - TODO: testing (unit, component, e2e)
 
@@ -57,4 +57,4 @@ Vite + React SPA. Build-time prerendering can be added later if link previews/SE
 ## SPA on CloudFront
 
 - Routing fallback: a Lambda@Edge function rewrites app routes to `index.html` (see `infra/CLAUDE.md`). Paths with a `.` pass through, so routes must not contain one
-- TODO: cache strategy (hashed assets long-cache, `index.html` no-cache)
+- TODO: cache strategy (hashed assets long-cache, `index.html` no-cache). Current behavior is in `infra/CLAUDE.md`

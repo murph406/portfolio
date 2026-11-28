@@ -23,7 +23,7 @@ Logical IDs follow the naming rules in `/CLAUDE.md`.
 - `WebBucketPolicy`: `SiteDistribution` can read files (`s3:GetObject`), non-HTTPS requests are denied. No `s3:ListBucket` on purpose, so a missing file returns 403, not 404
 - `SiteDistribution`, with `WebCachePolicy`, `WebOriginRequestPolicy` and `WebOriginAccessControl`
 - `WebSpaRewriteFunction` (Lambda@Edge, origin-request) and `LambdaEdgeRole`. CloudFront takes the published version (`.Version`), never `$LATEST` or an alias
-- Not yet: web upload (the bucket is empty until then), outputs
+- Output `SiteDistributionId`: `web.yaml` reads it to invalidate the cache, so renaming it breaks the web deploy
 
 ## Layout
 
@@ -36,7 +36,9 @@ Logical IDs follow the naming rules in `/CLAUDE.md`.
 
 ## Pipeline
 
-`/.github/workflows/infra.yaml` runs on pushes to `develop` or `main` that touch `infra/**` or the workflow:
+`/.github/workflows/deploy-all.yaml` runs on pushes to `develop` or `main`. It calls `infra.yaml` when `infra/**` or `infra.yaml` changed, then `web.yaml` when `web/**`, the root `package.json` or `web.yaml` changed. Web is skipped if infra fails. A manual run deploys both.
+
+`infra.yaml`:
 
 1. Signs in to AWS with the `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY` secrets of the branch's GitHub environment
 2. Creates the SAM CLI bucket if missing
@@ -66,7 +68,9 @@ Writing and editing templates locally is fine. Deploys are CI only.
 ## Web Builds
 
 - `npm run web:build` (from the root) writes two builds: `web/dist/main/` and `web/dist/maintenance/`
-- Replaced files are not kept. The upload step (not built yet) uses `aws s3 sync web/dist/main/ s3://<web-bucket> --delete`, so the bucket matches the new build; don't wipe the bucket first
+- Replaced files are not kept. `web.yaml` uses `aws s3 sync web/dist/main/ s3://<web-bucket> --delete`, so the bucket matches the new build; don't wipe the bucket first
+- Each web deploy then invalidates `/*`
+- Current caching: `WebCachePolicy` TTL is 300s default and 3600s max, compression is on, and the upload sets no `Cache-Control`
 - TODO: cache strategy (hashed assets long-cache, `index.html` no-cache)
 - TODO: how the maintenance build is served and how to switch to it
 

@@ -34,6 +34,7 @@ Methodology follows [*Job Hunting in the Age of AI* (Jerome Hardaway, master.dev
 /shared/                Shared types / API contracts                   (not created)
 /docs/plans/            Feature plans, local only (gitignored)
 /docs/patterns/         My conventions per workspace (web.md so far)
+/.github/workflows/     deploy-all.yaml plus one workflow per part
 /.claude/               Skills, rules, settings; hooks and commands planned
 ```
 
@@ -43,7 +44,7 @@ Part first, then what it is. The same part word is used in folders, scripts, wor
 
 - Parts: `Web` (browser app, `web/`), `Api` (backend, `api/`), `Site` (shared by everything on the domain, no folder). A new part gets its own word
 - AWS logical ID: `<Part><Thing>` (`WebCachePolicy`). Physical name: `${Project}-${Stage}-<part>-<thing>`
-- Root script: `<part>:<task>` (`web:build`). Workflow: `<part>.yaml`
+- Root script: `<part>:<task>` (`web:build`). Workflow: `<part>.yaml` (`deploy-all.yaml` calls them)
 - A resource tied to no single part keeps a descriptive name (`LambdaEdgeRole`)
 - "client" is an ordinary word for a user-facing app, not a folder or resource name
 ## Tech Stack
@@ -52,7 +53,7 @@ Part first, then what it is. The same part word is used in folders, scripts, wor
 - **API:** API Gateway + Lambda. TODO: runtime (Node/TS?), bundler (esbuild?), one Lambda per route vs. router
 - **Infra:** AWS CloudFormation, CloudFront + S3 for static hosting
 - **Monorepo:** npm, no workspaces; root scripts call each package with `npm --prefix`
-- **CI/CD:** GitHub Actions. `web.yaml` lints and builds the web app; `infra.yaml` creates the SAM CLI bucket if missing, then packages and deploys the stack
+- **CI/CD:** GitHub Actions. `deploy-all.yaml` holds the triggers and calls the others for changed parts, infra first. `web.yaml` lints, builds, uploads to S3 and invalidates CloudFront; `infra.yaml` creates the SAM CLI bucket if missing, then packages and deploys the stack
 - **CI AWS auth:** access keys in GitHub secrets (`AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`). This is my chosen standard for now; OIDC may replace it later, so don't switch without asking
 - **Testing:** TODO: unit test framework, e2e, coverage expectations
 - **Lint/format:** ESLint (web), `sam validate --lint` (infra)
@@ -108,7 +109,7 @@ CloudFormation and GitHub Actions YAML go one block at a time: read `.claude/rul
 Claude must **never** do the following without explicit approval in chat:
 
 - Deploy, update or delete any CloudFormation stack
-- Run `aws` CLI commands. Default is not to run them at all; if I ask for one, it must be read-only (`describe`, `list`, `get`) and must not reveal secret values. Never a command that writes, changes or deletes anything
+- Run `aws` CLI commands. Default is not to run them at all; if I ask for one, it must be read-only (`describe`, `list`, `get`) and must not reveal secret values. Never a command that writes, changes or deletes anything. `settings.json` currently blocks every `aws` command, so I run read-only ones myself
 - Touch DNS, certificates, IAM or billing
 - Commit or push directly to `main`
 - Commit secrets, `.env` files, or anything from `/content/private`
@@ -117,7 +118,7 @@ Claude must **never** do the following without explicit approval in chat:
 
 Enforcement (CLAUDE.md is guidance; these are the hard limits):
 
-- TODO: `.claude/settings.json` permission denies (e.g. `aws cloudformation deploy`, `aws * delete*`)
+- `.claude/settings.json` denies all `aws` Bash commands
 - TODO: hooks (e.g. lint/format after edit, block writes to `/content/private`, secret scan)
 
 ## Response Style
@@ -149,7 +150,7 @@ Enforcement (CLAUDE.md is guidance; these are the hard limits):
 - Lint (web): `npm run web:lint`
 - Favicons (web): `npm run web:favicons` (regenerates them from `Logo`, needs Google Chrome)
 - Lint (infra): `sam validate --lint --template-file infra/index.yaml --region us-east-1`
-- Deploy: CI only. Pushing to `develop` or `main` runs `.github/workflows/`. No local deploy command
+- Deploy: CI only. Pushing to `develop` or `main` runs `deploy-all.yaml` (changed parts only; a manual run deploys both). No local deploy command
 
 ## Definition of Done
 
@@ -172,7 +173,7 @@ A change is done only when:
 
 - `skills/`: `favicons`
 - `rules/`: `templates.md` (one block at a time for template YAML)
-- `settings.json`: asks before any template edit
+- `settings.json`: asks before any template edit, denies `aws` commands
 - No custom agents. Any agents used will be pre-built and integrated, never defined in this repo; agent rules stay locked down until I decide otherwise
-- Planned: permission denies and hooks in `settings.json`, `commands/` (e.g. `/score-resume`)
+- Planned: hooks in `settings.json`, `commands/` (e.g. `/score-resume`)
 - Shared assets are committed; they are part of the showcase. `settings.local.json` is not.

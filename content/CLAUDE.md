@@ -1,7 +1,7 @@
 # CLAUDE.md — content
 
-> Single source of truth for my career data. The site renders it, the resume is generated
-> from it.
+> Single source of truth for my career data. Goal: the site renders it and the resume is
+> generated from it. Neither is built yet.
 > Root rules in `/CLAUDE.md` apply here too.
 
 ## Rules
@@ -18,7 +18,7 @@
 
 ## Consumers
 
-- `web`: renders the portfolio
+- `web`: will render the portfolio
 - TODO: resume generator (output formats?)
 
 ## Public vs. Private

@@ -35,7 +35,7 @@ Reference: `web/src/styles/global/theme.css`.
 
 ### Layers
 
-1. **Foundation:** one hex per color (`--primary`). The only value to change to re-theme.
+1. **Foundation:** one hex per color (`--primary`), the value to change to re-theme. `--on-primary` is the color drawn on top of it. After re-theming, run `npm run web:favicons`.
 2. **Tokens:** named by role (`--surface-1`, `--text-2`), written once as `light-dark(<light>, <dark>)`. Each side takes its hue from the foundation with `hsl(from var(--primary) h <s> <l>)`; keep `s` or `l` to inherit it.
 3. **Switch:** `color-scheme: light dark` on `:root` lets the system theme pick the side, live. No JavaScript.
 
