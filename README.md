@@ -39,7 +39,7 @@ CloudFront distribution
 
 ```
 web/             React SPA
-api/             Serverless API: SAM template, Lambda source and OpenAPI docs
+api/             Serverless API: SAM template, Lambda source, OpenAPI docs and Bruno requests
 infra/           CloudFormation template, Lambda@Edge functions and deploy scripts
 content/         Career data: single source of truth
 docs/patterns/   Coding conventions per workspace
@@ -63,6 +63,8 @@ npm --prefix api install
 npm run api:start
 npm run api:docs   # second terminal: Swagger UI at http://localhost:3000
 ```
+
+To send requests from [Bruno](https://www.usebruno.com) instead, open the `api/bruno` folder as a collection and pick the `local` environment.
 
 ## Scripts
 

@@ -51,7 +51,7 @@ Part first, then what it is. The same part word is used in folders, scripts, wor
 ## Tech Stack
 
 - **Web:** TypeScript, React, Vite SPA. react-router, CSS Modules (see web/CLAUDE.md)
-- **API:** API Gateway + Lambda, TypeScript on Node 24, bundled with esbuild by SAM, one Lambda per route. Only the health check (`GET /api/v1`) so far. Deployed as its own stack and served by the site's CloudFront distribution at `/api/v1*`. Docs are OpenAPI + Swagger UI, served locally and never deployed
+- **API:** API Gateway + Lambda, TypeScript on Node 24, bundled with esbuild by SAM, one Lambda per route. Only the health check (`GET /api/v1`) so far. Deployed as its own stack and served by the site's CloudFront distribution at `/api/v1*`. Docs are OpenAPI + Swagger UI, served locally and never deployed. Requests are tried with the Bruno collection in `api/bruno/`
 - **Infra:** AWS CloudFormation, CloudFront + S3 for static hosting
 - **Monorepo:** npm, no workspaces; root scripts call each package with `npm --prefix`
 - **CI/CD:** GitHub Actions. `deploy-all.yaml` holds the triggers and calls the others for changed parts in the order api, infra, web. `api.yaml` typechecks, lints, builds and deploys the API stack. `web.yaml` lints, builds, uploads to S3 and invalidates CloudFront; `infra.yaml` creates the SAM CLI bucket if missing, reads the API ID from the API stack's output, then packages and deploys the stack

@@ -15,7 +15,7 @@ CloudFront (`/api/v1*`) → API Gateway → Lambda → `use()` (middleware) → 
 - `src/lib/response/`: response helpers (`ok`, `badRequest`, ...) and the `ApiResponse<T>` envelope
 - `src/lib/vars/`: values read from the environment
 - `openapi/openapi.yaml`: hand-written API docs, shown by `docs/index.html` (local only, never deployed)
-- `bruno/`: Bruno request collection (`environments/local.bru` points at port 8000). Never put a secret in these files; they're committed
+- `bruno/`: Bruno request collection in OpenCollection YAML (`opencollection.yml`, one `.yml` file per request). Environments are in `bruno/environments/`: `local` (port 8000), `main` (`www.ryanmurphy.dev`) and `develop` (no `baseUrl` yet). These files are committed, so never put a secret or develop's basic auth login in them
 - `samconfig.toml`: local build and `start-api` settings
 
 ## Conventions
@@ -32,7 +32,7 @@ The health check (`src/controllers/health/`) is the reference implementation. No
 1. Controller in `src/controllers/<name>/index.ts`
 2. Function and log group in `template.yaml` (names follow `/CLAUDE.md`; edit one block at a time)
 3. Path in `openapi/openapi.yaml`
-4. Request in `bruno/`
+4. Request in `bruno/` (a `.yml` file)
 5. If it needs more than `GET`, headers or cookies: CloudFront in `infra/index.yaml` currently allows only `GET`, `HEAD` and `OPTIONS` on `/api/v1*`, and forwards query strings but no headers or cookies
 
 ## Security
@@ -52,6 +52,7 @@ The health check (`src/controllers/health/`) is the reference implementation. No
 - Typecheck: `npm run api:typecheck`
 - Lint: `npm run api:lint` and `sam validate --lint --template-file api/template.yaml --region us-east-1`
 - Test: TODO
+- Try requests: open the `api/bruno` folder in the Bruno app and pick an environment (`local` needs `api:start` running)
 - Deploy: CI only (`.github/workflows/api.yaml`)
 
 The `ApiGatewayId` output is read by `infra.yaml`; renaming it breaks the infra deploy.
@@ -72,3 +73,4 @@ Undecided or not built. Ask before settling any of these.
 - TODO: logging format, alarms and tracing
 - TODO: usage plans
 - TODO: `docs/patterns/api.md`
+- TODO: `develop` environment in Bruno (`baseUrl`, and how to pass basic auth without committing it)

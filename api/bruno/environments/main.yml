@@ -1,1 +1,5 @@
 name: main
+variables:
+  - name: baseUrl
+    value: https://www.ryanmurphy.dev
+    description: ""
