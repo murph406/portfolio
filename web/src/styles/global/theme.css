@@ -5,7 +5,7 @@
 :root {
   /* Foundation: change this hex to re-theme */
   /* --primary: #1d7a4e; */
-  --primary: rgb(0, 170, 255);
+  --primary: coral;
 
   /* Content drawn on a --primary fill */
   --on-primary: white;
