@@ -29,6 +29,7 @@ Logical IDs follow the naming rules in `/CLAUDE.md`.
 
 - `index.yaml`: the CloudFormation template (uses the SAM transform)
 - `functions/originRequests/webSpaRewrite/`: the SPA rewrite function. A path without a `.` becomes `/index.html`
+- `functions/originRequests/webSpaSubpathRewrite/`: for showcasing other SPAs (from this repo or not) at one-level subroutes (`/<prefix>`), each from its own S3 origin. Its header comment has the rules. Not in the template yet
 - `functions/viewerRequests/siteBasicAuth/`: basic auth check for develop. Not in the template yet
 - `scripts/`: deploy helper scripts
   - `create-sam-cli-s3-bucket.sh`: creates the `<Project>-sam-cli` bucket if missing
