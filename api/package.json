@@ -1,0 +1,28 @@
+{
+  "name": "portfolio-api",
+  "private": true,
+  "version": "1.0.0",
+  "scripts": {
+    "start": "nodemon --watch src --ext js,ts,json --exec 'npm run typecheck && sam build && sam local start-api'",
+    "build": "sam build",
+    "lint": "eslint src/",
+    "lint:fix": "eslint src/ --fix",
+    "typecheck": "tsc --noEmit",
+    "docs:build": "rm -rf docs/dist && mkdir -p docs/dist && cp docs/index.html openapi/openapi.yaml docs/dist/",
+    "docs": "npm run docs:build && serve docs/dist -l tcp://127.0.0.1:3000"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.5",
+    "@types/aws-lambda": "^8.10.164",
+    "@types/node": "^24.19.4",
+    "esbuild": "^0.28.2",
+    "eslint": "^9.39.5",
+    "eslint-import-resolver-typescript": "^4.4.5",
+    "eslint-plugin-import": "^2.32.0",
+    "globals": "^17.14.0",
+    "nodemon": "^3.1.14",
+    "serve": "^14.2.5",
+    "typescript": "~6.0.3",
+    "typescript-eslint": "^8.74.0"
+  }
+}

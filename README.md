@@ -31,13 +31,14 @@ CloudFront distribution
 | ------ | ------------------------------------- | ---------- | ----------- |
 | Web    | TypeScript, React, Vite               | `web/`     | In progress |
 | Infra  | AWS CloudFormation, CloudFront + S3   | `infra/`   | In progress |
-| API    | API Gateway + Lambda (no VPC)         | `api/`     | Not started |
+| API    | API Gateway + Lambda (no VPC)         | `api/`     | Local only  |
 | Data   | Career source of truth                | `content/` | Not started |
 
 ## Repo Structure
 
 ```
 web/             React SPA
+api/             Serverless API: SAM template, Lambda source and OpenAPI docs
 infra/           CloudFormation template, Lambda@Edge functions and deploy scripts
 content/         Career data: single source of truth
 docs/patterns/   Coding conventions per workspace
@@ -47,11 +48,19 @@ docs/patterns/   Coding conventions per workspace
 
 ## Getting Started
 
-**Prerequisites:** Node 24 (what CI uses) and npm. The AWS SAM CLI is only needed to lint the infra template.
+**Prerequisites:** Node 24 (what CI uses) and npm. The AWS SAM CLI is needed to lint the templates and run the API, which also needs Docker.
 
 ```bash
 npm --prefix web install
 npm run web:start:main
+```
+
+The API runs only on your machine for now; it isn't deployed. It has one health check, `GET http://localhost:8000/api/v1`:
+
+```bash
+npm --prefix api install
+npm run api:start
+npm run api:docs   # second terminal: Swagger UI at http://localhost:3000
 ```
 
 ## Scripts
@@ -63,11 +72,17 @@ npm run web:start:main
 | `npm run web:build`             | Typecheck and build both targets      |
 | `npm run web:lint`              | Lint the web app                      |
 | `npm run web:favicons`          | Regenerate favicons (needs Chrome)    |
+| `npm run api:start`             | Run the API locally (needs Docker)    |
+| `npm run api:docs`              | Serve the API docs locally            |
+| `npm run api:build`             | Build the API with SAM                |
+| `npm run api:typecheck`         | Typecheck the API                     |
+| `npm run api:lint`              | Lint the API                          |
 
-Lint the infra template:
+Lint the templates:
 
 ```bash
 sam validate --lint --template-file infra/index.yaml --region us-east-1
+sam validate --lint --template-file api/template.yaml --region us-east-1
 ```
 
 ## Deployment

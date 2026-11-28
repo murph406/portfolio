@@ -6,6 +6,11 @@
     "web:start:maintenance": "npm --prefix web run dev:maintenance",
     "web:build": "npm --prefix web run build",
     "web:lint": "npm --prefix web run lint",
-    "web:favicons": "npm --prefix web run favicons"
+    "web:favicons": "npm --prefix web run favicons",
+    "api:start": "npm --prefix api run start",
+    "api:build": "npm --prefix api run build",
+    "api:lint": "npm --prefix api run lint",
+    "api:typecheck": "npm --prefix api run typecheck",
+    "api:docs": "npm --prefix api run docs"
   }
 }

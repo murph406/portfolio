@@ -1,0 +1,101 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: "AWS::Serverless-2016-10-31"
+Description: Portfolio REST API
+
+Parameters:
+  Project:
+    Type: String
+  Stage:
+    Type: String
+    AllowedValues:
+      - develop
+      - main
+
+Globals:
+  Function:
+    CodeUri: ./
+    Runtime: nodejs24.x
+    Timeout: 10
+    MemorySize: 128
+    Environment:
+      Variables:
+        STAGE: !Ref Stage
+        PROJECT: !Ref Project
+
+Resources:
+  ApiLambdaRole:
+    Type: AWS::IAM::Role
+    Metadata:
+      com.aws.cloudformation.Context:
+        why: Execution role for the API Lambdas; it can only write logs.
+    Properties:
+      RoleName: !Sub "${Project}-${Stage}-api-lambda"
+      Tags:
+        - Key: Project
+          Value: !Ref Project
+        - Key: Stage
+          Value: !Ref Stage
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+
+  ApiRestApi:
+    Type: AWS::Serverless::Api
+    Metadata:
+      com.aws.cloudformation.Context:
+        why: REST API that receives requests and passes them to the API Lambdas.
+    Properties:
+      Name: !Sub "${Project}-${Stage}-api"
+      StageName: !Ref Stage
+      Tags:
+        Project: !Ref Project
+        Stage: !Ref Stage
+
+  ApiHealthFunction:
+    Type: AWS::Serverless::Function
+    Metadata:
+      BuildMethod: esbuild
+      BuildProperties:
+        Target: es2020
+        Sourcemap: true
+        Minify: false
+        EntryPoints:
+          - src/controllers/health/index.ts
+      com.aws.cloudformation.Context:
+        why: Health check endpoint for the API.
+    Properties:
+      FunctionName: !Sub "${Project}-${Stage}-api-health"
+      Role: !GetAtt ApiLambdaRole.Arn
+      Handler: index.handler
+      Tags:
+        Project: !Ref Project
+        Stage: !Ref Stage
+      Events:
+        api:
+          Type: Api
+          Properties:
+            Path: /api/v1
+            Method: GET
+            RestApiId: !Ref ApiRestApi
+
+  ApiHealthLogGroup:
+    Type: AWS::Logs::LogGroup
+    DeletionPolicy: Delete
+    UpdateReplacePolicy: Delete
+    Metadata:
+      com.aws.cloudformation.Context:
+        why: Logs for the health function.
+    Properties:
+      LogGroupName: !Sub "/aws/lambda/${Project}-${Stage}-api-health"
+      RetentionInDays: 30
+      Tags:
+        - Key: Project
+          Value: !Ref Project
+        - Key: Stage
+          Value: !Ref Stage

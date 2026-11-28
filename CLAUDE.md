@@ -27,7 +27,7 @@ Methodology follows [*Job Hunting in the Age of AI* (Jerome Hardaway, master.dev
 ```
 /CLAUDE.md              ← you are here
 /web/                   TypeScript React SPA → S3 + CloudFront        (see web/CLAUDE.md)
-/api/                   API Gateway + Lambda (no VPC)                  (not started)
+/api/                   API Gateway + Lambda (no VPC), local only      (template in api/template.yaml)
 /infra/                 CloudFormation stacks                          (see infra/CLAUDE.md)
 /content/               Career source of truth                         (see content/CLAUDE.md)
 /content/private/       gitignored: resume drafts, LinkedIn exports, personal data
@@ -51,13 +51,13 @@ Part first, then what it is. The same part word is used in folders, scripts, wor
 ## Tech Stack
 
 - **Web:** TypeScript, React, Vite SPA. react-router, CSS Modules (see web/CLAUDE.md)
-- **API:** API Gateway + Lambda. TODO: runtime (Node/TS?), bundler (esbuild?), one Lambda per route vs. router
+- **API:** API Gateway + Lambda, TypeScript on Node 24, bundled with esbuild by SAM, one Lambda per route. Only the health check (`GET /api/v1`) so far. Local only: no workflow or deploy yet. Docs are OpenAPI + Swagger UI, served locally and never deployed
 - **Infra:** AWS CloudFormation, CloudFront + S3 for static hosting
 - **Monorepo:** npm, no workspaces; root scripts call each package with `npm --prefix`
 - **CI/CD:** GitHub Actions. `deploy-all.yaml` holds the triggers and calls the others for changed parts, infra first. `web.yaml` lints, builds, uploads to S3 and invalidates CloudFront; `infra.yaml` creates the SAM CLI bucket if missing, then packages and deploys the stack
 - **CI AWS auth:** access keys in GitHub secrets (`AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`). This is my chosen standard for now; OIDC may replace it later, so don't switch without asking
 - **Testing:** TODO: unit test framework, e2e, coverage expectations
-- **Lint/format:** ESLint (web), `sam validate --lint` (infra)
+- **Lint/format:** ESLint (web, api), `sam validate --lint` (infra, api)
 
 ## Environments & Secrets
 
@@ -151,6 +151,12 @@ Enforcement (CLAUDE.md is guidance; these are the hard limits):
 - Lint (web): `npm run web:lint`
 - Favicons (web): `npm run web:favicons` (regenerates them from `Logo`, needs Google Chrome)
 - Lint (infra): `sam validate --lint --template-file infra/index.yaml --region us-east-1`
+- Install (api): `npm --prefix api install`
+- Dev (api): `npm run api:start` (serves `http://localhost:8000`, needs SAM CLI and Docker; restart after template changes)
+- Docs (api): `npm run api:docs` (serves `http://localhost:3000`; "Try it out" needs `api:start` running)
+- Build (api): `npm run api:build`
+- Typecheck (api): `npm run api:typecheck`
+- Lint (api): `npm run api:lint`, and `sam validate --lint --template-file api/template.yaml --region us-east-1`
 - Deploy: CI only. Pushing to `develop` or `main` runs `deploy-all.yaml` (changed parts only; a manual run deploys both). No local deploy command
 
 ## Definition of Done
