@@ -11,6 +11,7 @@ jobs:
   changes:
     runs-on: ubuntu-latest
     outputs:
+      api: ${{ steps.filter.outputs.api }}
       infra: ${{ steps.filter.outputs.infra }}
       web: ${{ steps.filter.outputs.web }}
     steps:
@@ -20,6 +21,10 @@ jobs:
         with:
           base: ${{ github.ref }}
           filters: |
+            api:
+              - 'api/**'
+              - 'package.json'
+              - '.github/workflows/api.yaml'
             infra:
               - 'infra/**'
               - '.github/workflows/infra.yaml'
@@ -28,9 +33,15 @@ jobs:
               - 'package.json'
               - '.github/workflows/web.yaml'
 
-  infra:
+  api:
     needs: changes
-    if: github.event_name == 'workflow_dispatch' || needs.changes.outputs.infra == 'true'
+    if: github.event_name == 'workflow_dispatch' || needs.changes.outputs.api == 'true'
+    uses: ./.github/workflows/api.yaml
+    secrets: inherit
+
+  infra:
+    needs: [changes, api]
+    if: ${{ !failure() && !cancelled() && (github.event_name == 'workflow_dispatch' || needs.changes.outputs.infra == 'true') }}
     uses: ./.github/workflows/infra.yaml
     secrets: inherit
 

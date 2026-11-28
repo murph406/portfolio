@@ -53,6 +53,11 @@ Resources:
     Properties:
       Name: !Sub "${Project}-${Stage}-api"
       StageName: !Ref Stage
+      MethodSettings:
+        - ResourcePath: "/*"
+          HttpMethod: "*"
+          ThrottlingRateLimit: 10
+          ThrottlingBurstLimit: 20
       Tags:
         Project: !Ref Project
         Stage: !Ref Stage

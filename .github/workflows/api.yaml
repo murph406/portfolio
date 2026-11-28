@@ -1,0 +1,59 @@
+name: Deploy API
+
+on:
+  workflow_call:
+
+env:
+  Project: ${{ vars.PROJECT }}
+
+jobs:
+  deploy:
+    if: github.ref_name == 'develop' || github.ref_name == 'main'
+    runs-on: ubuntu-latest
+    environment: ${{ github.ref_name }}
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: aws-actions/setup-sam@v2
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: api/package-lock.json
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v6
+        with:
+          aws-region: "us-east-1"
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+      - name: Install dependencies
+        run: npm --prefix api ci
+
+      - name: Typecheck
+        run: npm run api:typecheck
+
+      - name: Lint
+        run: npm run api:lint
+
+      - name: Build
+        run: npm run api:build
+
+      - name: Build Cloudformation Package
+        working-directory: api
+        run: |
+          aws cloudformation package \
+          --template-file .aws-sam/build/template.yaml \
+          --output-template-file packaged-template.yaml \
+          --s3-bucket $Project-sam-cli
+
+      - name: Deploy Cloudformation
+        working-directory: api
+        run: |
+          aws cloudformation deploy \
+          --template-file packaged-template.yaml \
+          --stack-name $Project-${{ github.ref_name }}-api \
+          --capabilities CAPABILITY_NAMED_IAM \
+          --parameter-overrides Project=$Project Stage=${{ github.ref_name }}
