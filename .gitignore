@@ -3,3 +3,4 @@ dist
 /docs/plans*
 /content/private/
 .DS_Store
+.vscode/

@@ -1,6 +1,6 @@
 # Infra
 
-AWS infrastructure for the portfolio, defined with CloudFormation. **In progress:** the buckets and their policies, the CloudFront distribution, the routing function, develop-only basic auth and the `main` custom domain are defined, and CI uploads the web build.
+AWS infrastructure for the portfolio, defined with CloudFormation. **In progress:** the buckets and their policies, the CloudFront distribution, the routing function, develop-only basic auth, the `main` custom domain and the apex redirect are defined, and CI uploads the web build.
 
 ## Hosting
 
@@ -10,7 +10,7 @@ CloudFront distribution
 └── /*        → private S3 bucket  (React web app)
 ```
 
-`main` is served at `www.ryanmurphy.dev`. A Lambda@Edge function sends app routes to `index.html`. On `develop` only, a second one requires basic auth, checked against a value kept in SSM Parameter Store.
+`main` is served at `www.ryanmurphy.dev`, and `ryanmurphy.dev` redirects there through a second distribution and an S3 redirect bucket. A Lambda@Edge function sends app routes to `index.html`. On `develop` only, a second one requires basic auth, checked against a value kept in SSM Parameter Store.
 
 ## Deployment
 

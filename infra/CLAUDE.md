@@ -5,7 +5,8 @@
 
 ## Hosting (target)
 
-- One CloudFront distribution. Its root serves the React web app (`web/dist/main/`) from a private S3 bucket with Origin Access Control
+- The site has one CloudFront distribution. Its root serves the React web app (`web/dist/main/`) from a private S3 bucket with Origin Access Control
+- `main` only: `ryanmurphy.dev` redirects to `www.ryanmurphy.dev` through a second distribution in front of an S3 redirect bucket (S3 website endpoints are HTTP only, and `.dev` requires HTTPS)
 - The web bucket is read only through CloudFront; viewers are redirected to HTTPS
 - SPA routing: a Lambda@Edge origin-request function rewrites app routes to `index.html`
 - `develop` only: a Lambda@Edge viewer-request function requires basic auth. `main` is public
@@ -26,6 +27,7 @@ Logical IDs follow the naming rules in `/CLAUDE.md`.
 - `WebSpaRewriteFunction` (Lambda@Edge, origin-request) and `LambdaEdgeRole`. CloudFront takes the published version (`.Version`), never `$LATEST` or an alias
 - Behind the `IsDevelop` condition: `SiteBasicAuthFunction` (Lambda@Edge, viewer-request) and `SiteBasicAuthRole`, which can read only the basic auth parameter. Each new cache behavior needs this association too, or its path is open on develop
 - Behind the `IsMain` condition: `SiteDistribution`'s alias `www.ryanmurphy.dev` and its ACM certificate (`sni-only`, minimum `TLSv1.2_2021`)
+- Also behind `IsMain`: `SiteRedirectBucket` (`<Project>-<Stage>-site-redirect`, no files, no access logs) and `SiteRedirectDistribution` (alias `ryanmurphy.dev`, same certificate, managed `CachingDisabled` policy, `WebOriginRequestPolicy` to pass query strings)
 - Output `SiteDistributionId`: `web.yaml` reads it to invalidate the cache, so renaming it breaks the web deploy
 
 ## Layout
@@ -57,7 +59,7 @@ Logical IDs follow the naming rules in `/CLAUDE.md`.
 
 - Cheap by default: serverless, no VPC, no always-on resources.
 - Build one resource at a time, following the plan workflow in `/CLAUDE.md`.
-- Everything is defined in a template. The only hand-made exceptions are the SSM parameters (see Security & Secrets), the ACM certificate and the Route 53 record for `www`.
+- Everything is defined in a template. The only hand-made exceptions are the SSM parameters (see Security & Secrets), the ACM certificate and the Route 53 records for `www` and the apex.
 
 ## Guardrails
 
@@ -86,15 +88,15 @@ Writing and editing templates locally is fine. Deploys are CI only.
 - No S3 versioning on any bucket unless I say otherwise
 - Default region `us-east-1`. Lambda@Edge functions and CloudFront ACM certificates must live there
 - TODO: how to split stacks
-- TODO: apex `ryanmurphy.dev`, DNS (Route 53) and certificate (ACM) in a template, CI/CD role, budget alarm
+- TODO: DNS (Route 53) and certificate (ACM) in a template, CI/CD role, budget alarm
 
 ## Security & Secrets
 
 - No secrets, account IDs or credentials in templates or git. This repo is public-facing
 - Secrets live in SSM Parameter Store (see `/CLAUDE.md`)
 - `/portfolio/develop/basic-auth` is created by hand, outside the template (CloudFormation can't create a SecureString): value `Basic <base64 of user:password>`, default `aws/ssm` key, in `us-east-1`. The function caches it while warm, so a change isn't immediate, and returns 401 to everyone if it can't read it
-- `/portfolio/main/certificate-arn` is created by hand (String, `us-east-1`): the ARN of the wildcard ACM certificate. It's kept out of git because it contains the account ID. `SiteDistribution` reads it with an SSM dynamic reference, so changing the value takes effect only on a later stack update that re-resolves it
-- Buckets: all public access blocked, ACLs disabled, HTTPS only (each bucket policy denies non-HTTPS requests)
+- `/portfolio/main/certificate-arn` is created by hand (String, `us-east-1`): the ARN of the wildcard ACM certificate. It's kept out of git because it contains the account ID. Both distributions read it with an SSM dynamic reference, so changing the value takes effect only on a later stack update that re-resolves it
+- Buckets: all public access blocked, ACLs disabled, HTTPS only (each bucket policy denies non-HTTPS requests). Exception: `SiteRedirectBucket` has no bucket policy, because CloudFront reaches its website endpoint over HTTP
 - Access logs for the web bucket are permanently deleted after 30 days
 - TODO: least-privilege IAM (the deploy step's IAM capabilities are broader than needed; leave for now)
 
