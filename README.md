@@ -33,7 +33,7 @@ CloudFront distribution
 
 ```
 web/             React SPA
-infra/           CloudFormation template, Lambda@Edge function and deploy scripts
+infra/           CloudFormation template, Lambda@Edge functions and deploy scripts
 content/         Career data: single source of truth
 docs/patterns/   Coding conventions per workspace
 .claude/         Claude Code settings, rules and skills

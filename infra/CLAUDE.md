@@ -8,6 +8,7 @@
 - One CloudFront distribution. Its root serves the React web app (`web/dist/main/`) from a private S3 bucket with Origin Access Control
 - The web bucket is read only through CloudFront; viewers are redirected to HTTPS
 - SPA routing: a Lambda@Edge origin-request function rewrites app routes to `index.html`
+- `develop` only: a Lambda@Edge viewer-request function requires basic auth. `main` is public
 - API (not yet): `/api/v1*` goes to API Gateway on the same distribution. **No code for it until I say so**
 - Stages: `develop` and `main`, each its own stack
 - CloudFormation templates, deployed from GitHub Actions with AWS access keys stored as GitHub secrets (my standard for now; OIDC may come later)
@@ -23,6 +24,7 @@ Logical IDs follow the naming rules in `/CLAUDE.md`.
 - `WebBucketPolicy`: `SiteDistribution` can read files (`s3:GetObject`), non-HTTPS requests are denied. No `s3:ListBucket` on purpose, so a missing file returns 403, not 404
 - `SiteDistribution`, with `WebCachePolicy`, `WebOriginRequestPolicy` and `WebOriginAccessControl`
 - `WebSpaRewriteFunction` (Lambda@Edge, origin-request) and `LambdaEdgeRole`. CloudFront takes the published version (`.Version`), never `$LATEST` or an alias
+- Behind the `IsDevelop` condition: `SiteBasicAuthFunction` (Lambda@Edge, viewer-request) and `SiteBasicAuthRole`, which can read only the basic auth parameter. Each new cache behavior needs this association too, or its path is open on develop
 - Output `SiteDistributionId`: `web.yaml` reads it to invalidate the cache, so renaming it breaks the web deploy
 
 ## Layout
@@ -89,6 +91,7 @@ Writing and editing templates locally is fine. Deploys are CI only.
 
 - No secrets, account IDs or credentials in templates or git. This repo is public-facing
 - Secrets live in SSM Parameter Store (see `/CLAUDE.md`)
+- `/portfolio/develop/basic-auth` is created by hand, outside the template (CloudFormation can't create a SecureString): value `Basic <base64 of user:password>`, default `aws/ssm` key, in `us-east-1`. The function caches it while warm, so a change isn't immediate, and returns 401 to everyone if it can't read it
 - Buckets: all public access blocked, ACLs disabled, HTTPS only (each bucket policy denies non-HTTPS requests)
 - Access logs for the web bucket are permanently deleted after 30 days
 - TODO: least-privilege IAM (the deploy step's IAM capabilities are broader than needed; leave for now)
