@@ -65,7 +65,7 @@ Part first, then what it is. The same part word is used in folders, scripts, wor
 - AWS: one account; stages are separate stacks, not separate accounts. Default region `us-east-1` (keeps Lambda@Edge and ACM in one region). Never commit the account ID
 - Note: Lambda@Edge functions and CloudFront ACM certificates must live in `us-east-1`
 - Secrets live in SSM Parameter Store (`/portfolio/<stage>/<name>`, SecureString), never in git
-- Domain: `ryanmurphy.dev`. TODO: DNS / Route 53 and certificate setup (launch on the cloudfront.net URL first)
+- Domain: `ryanmurphy.dev`. `main` is served at `www.ryanmurphy.dev`; the Route 53 record and wildcard ACM certificate are made by hand (see `infra/CLAUDE.md`). TODO: apex domain
 
 ## Cost Guardrails
 
