@@ -3,6 +3,7 @@ echo "" >> scripts/.overrides
 array=(
   Stage
   Project
+  ApiGatewayId
 )
 
 for i in "${array[@]}"

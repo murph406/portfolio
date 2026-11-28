@@ -34,6 +34,14 @@ jobs:
           chmod +x ./infra/scripts/create-sam-cli-s3-bucket.sh
           ./infra/scripts/create-sam-cli-s3-bucket.sh
 
+      - name: Get API Gateway id
+        run: |
+          ApiGatewayId=$(aws cloudformation describe-stacks \
+            --stack-name "$Project-$Stage-api" \
+            --query "Stacks[0].Outputs[?OutputKey=='ApiGatewayId'].OutputValue" \
+            --output text)
+          echo "ApiGatewayId=$ApiGatewayId" >> "$GITHUB_ENV"
+
       - name: Set and Print Overrides
         shell: bash
         working-directory: infra

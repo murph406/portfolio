@@ -10,6 +10,8 @@ Parameters:
     AllowedValues:
       - develop
       - main
+  ApiGatewayId:
+    Type: String
 
 Conditions:
   IsDevelop:
@@ -343,6 +345,29 @@ Resources:
           CachePolicyId: 4135ea2d-6df8-44a3-9df3-4b5a84be39ad # AWS managed policy: CachingDisabled
           OriginRequestPolicyId: !GetAtt WebOriginRequestPolicy.Id
 
+  ApiResponseHeadersPolicy:
+    Type: AWS::CloudFront::ResponseHeadersPolicy
+    Metadata:
+      com.aws.cloudformation.Context:
+        why: adds security headers to API responses served through CloudFront
+    Properties:
+      ResponseHeadersPolicyConfig:
+        Name: !Sub "${Project}-${Stage}-api-response-headers"
+        SecurityHeadersConfig:
+          ContentTypeOptions:
+            Override: true
+          FrameOptions:
+            FrameOption: DENY
+            Override: true
+          ReferrerPolicy:
+            ReferrerPolicy: strict-origin-when-cross-origin
+            Override: true
+          StrictTransportSecurity:
+            AccessControlMaxAgeSec: 31536000
+            IncludeSubdomains: false
+            Preload: false
+            Override: true
+
   SiteDistribution:
     Type: AWS::CloudFront::Distribution
     Metadata:
@@ -370,6 +395,32 @@ Resources:
             S3OriginConfig:
               OriginAccessIdentity: ""
             OriginAccessControlId: !GetAtt WebOriginAccessControl.Id
+          - DomainName: !Sub "${ApiGatewayId}.execute-api.${AWS::Region}.amazonaws.com"
+            Id: ApiOrigin
+            OriginPath: !Sub "/${Stage}"
+            CustomOriginConfig:
+              OriginProtocolPolicy: https-only
+              HTTPSPort: 443
+              OriginReadTimeout: 30
+              OriginSSLProtocols:
+                - TLSv1.2
+        CacheBehaviors:
+          - PathPattern: /api/v1*
+            TargetOriginId: ApiOrigin
+            ViewerProtocolPolicy: redirect-to-https
+            CachePolicyId: 4135ea2d-6df8-44a3-9df3-4b5a84be39ad # AWS managed policy: CachingDisabled
+            OriginRequestPolicyId: !GetAtt WebOriginRequestPolicy.Id
+            ResponseHeadersPolicyId: !Ref ApiResponseHeadersPolicy
+            AllowedMethods:
+              - GET
+              - HEAD
+              - OPTIONS
+            LambdaFunctionAssociations:
+              Fn::If:
+                - IsDevelop
+                - - EventType: viewer-request
+                    LambdaFunctionARN: !Ref SiteBasicAuthFunction.Version
+                - Ref: AWS::NoValue
         DefaultCacheBehavior:
           TargetOriginId: WebOrigin
           ViewerProtocolPolicy: redirect-to-https

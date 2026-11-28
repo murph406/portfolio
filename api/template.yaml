@@ -104,3 +104,8 @@ Resources:
           Value: !Ref Project
         - Key: Stage
           Value: !Ref Stage
+
+Outputs:
+  ApiGatewayId:
+    Description: API Gateway ID, read by the infra workflow to point CloudFront at the API
+    Value: !Ref ApiRestApi
