@@ -27,7 +27,7 @@ Methodology follows [*Job Hunting in the Age of AI* (Jerome Hardaway, master.dev
 ```
 /CLAUDE.md              ← you are here
 /web/                   TypeScript React SPA → S3 + CloudFront        (see web/CLAUDE.md)
-/api/                   API Gateway + Lambda (no VPC), own stack       (template in api/template.yaml)
+/api/                   API Gateway + Lambda (no VPC), own stack       (see api/CLAUDE.md)
 /infra/                 CloudFormation stacks                          (see infra/CLAUDE.md)
 /content/               Career source of truth                         (see content/CLAUDE.md)
 /content/private/       gitignored: resume drafts, LinkedIn exports, personal data
