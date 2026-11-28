@@ -1,6 +1,6 @@
 import type { APIGatewayProxyResult } from 'aws-lambda'
 
-import { isLocal } from '@/utils/vars'
+import { isLocal } from '@/lib/vars'
 
 export interface ApiSuccess<T> {
   success: true

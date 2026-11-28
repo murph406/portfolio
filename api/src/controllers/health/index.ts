@@ -1,5 +1,5 @@
+import { ok } from '@/lib/response'
 import { use } from '@/middleware'
-import { ok } from '@/utils/response'
 
 const handler = async () => {
   const message = '🔥🔥🔥🔥🔥🔥'
