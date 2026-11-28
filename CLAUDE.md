@@ -100,7 +100,7 @@ Build small and iteratively. Never one-shot a feature or a stack.
 2. **Review:** I review and edit the plan before any code is written.
 3. **Build one step:** implement only the step I name.
 4. **Stop and verify:** after each step, stop, state exactly how to verify it, and wait. Do not continue to the next step on your own.
-5. **Commit:** once verified, the step is committed and checked off in the plan. Plans stay local; never commit them.
+5. **Check off:** once verified, the step is checked off in the plan, and Claude may say it's a good time to commit. I do the commit. Plans stay local; never commit them.
 6. **Adapt:** if a step reveals something unexpected or is too big, update the plan (or split the step into a sub-plan) before continuing. The plan file is the source of truth.
 
 CloudFormation and GitHub Actions YAML go one block at a time: read `.claude/rules/templates.md` before planning or writing them.
@@ -168,7 +168,7 @@ A change is done only when:
 - Branches: `feat/`, `fix/`, `docs/` off `develop`. I create them; Claude never does, only flags a name that breaks the convention
 - Commits: Conventional Commits, e.g. `feat(web): add hero`
 - PRs: one concern each, ideally under ~300 changed lines; description says what, why and how it was verified
-- Claude Code may commit to feature branches after a step is verified. Never to `develop` or `main`. Chat sessions never write, commit or push
+- I make all commits. Claude never commits, but may say when it's a good time to. Chat sessions never write, commit or push
 
 ## Claude Assets (`/.claude`)
 
