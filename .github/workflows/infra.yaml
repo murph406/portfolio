@@ -2,13 +2,7 @@ name: Deploy infrastructure
 
 on:
   workflow_call:
-  push:
-    branches:
-      - develop
-      - main
-    paths:
-      - infra/**
-      - .github/workflows/infra.yaml
+  
 env:
   Project: ${{ vars.PROJECT }}
 

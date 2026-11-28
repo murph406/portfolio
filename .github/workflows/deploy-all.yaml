@@ -8,10 +8,33 @@ on:
       - main
 
 jobs:
+  changes:
+    runs-on: ubuntu-latest
+    outputs:
+      infra: ${{ steps.filter.outputs.infra }}
+      web: ${{ steps.filter.outputs.web }}
+    steps:
+      - uses: actions/checkout@v7
+      - id: filter
+        uses: dorny/paths-filter@v3
+        with:
+          filters: |
+            infra:
+              - 'infra/**'
+              - '.github/workflows/infra.yaml'
+            web:
+              - 'web/**'
+              - 'package.json'
+              - '.github/workflows/web.yaml'
+
   infra:
+    needs: changes
+    if: github.event_name == 'workflow_dispatch' || needs.changes.outputs.infra == 'true'
     uses: ./.github/workflows/infra.yaml
     secrets: inherit
+
   web:
-    needs: infra
+    needs: [changes, infra]
+    if: ${{ !failure() && !cancelled() && (github.event_name == 'workflow_dispatch' || needs.changes.outputs.web == 'true') }}
     uses: ./.github/workflows/web.yaml
     secrets: inherit

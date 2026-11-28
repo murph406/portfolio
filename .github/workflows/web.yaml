@@ -2,14 +2,7 @@ name: Deploy web
 
 on:
   workflow_call: 
-  push:
-    branches:
-      - develop
-      - main
-    paths:
-      - web/**
-      - package.json
-      - .github/workflows/web.yaml
+  
 jobs:
   deploy:
     if: github.ref_name == 'develop' || github.ref_name == 'main'
